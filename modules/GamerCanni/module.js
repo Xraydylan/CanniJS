@@ -5,11 +5,15 @@ const Application = require("../../lib/Application");
 const Module = require("../../lib/Module");
 const Promise = require("bluebird");
 const Tools = require("../../lib/Tools");
+const AntiVirus = require("./submodule/AntiVirus/antiVirus");
+var active_AV = false;
 
 module.exports = class RockPaperScissors extends Module {
     start() {
         return new Promise((resolve, reject) => {
             this.log.debug("Starting...");
+
+            AntiVirus.start();
 
             Application.modules.Discord.client.on('message', (msg) => {
                 if (msg.author.bot) {
@@ -29,6 +33,18 @@ module.exports = class RockPaperScissors extends Module {
                         if (Application.modules.Discord.controlTalkedRecently(msg, this.config.playGameType)) {
                             return this.letsPlay(msg);
                         }
+                    }
+                    if (Tools.msg_starts_mentioned(msg, "deactivate antivirus")) {
+                        return this.stop_antivirus(msg);
+                    } else if (Tools.msg_starts_mentioned(msg, "activate antivirus")) {
+                        return this.start_antivirus(msg);
+                    }
+                }
+
+                if (active_AV) {
+                    if (Tools.msg_starts(msg,"-"))
+                    {
+                        return AntiVirus.input(msg, msg.content.substring(1))
                     }
                 }
             });
@@ -167,6 +183,26 @@ module.exports = class RockPaperScissors extends Module {
                 break;
         }
 
+        Application.modules.Discord.setMessageSent();
+    }
+
+    start_antivirus(msg) {
+        if (active_AV) {
+            msg.channel.send(Tools.parseReply(this.config.ans_AV_active));
+        } else {
+            active_AV = true;
+            msg.channel.send(Tools.parseReply(this.config.ans_activate_AV));
+        }
+        Application.modules.Discord.setMessageSent();
+    }
+
+    stop_antivirus(msg) {
+        if (active_AV) {
+            active_AV = false;
+            msg.channel.send(Tools.parseReply(this.config.ans_deactivate_AV));
+        } else {
+            msg.channel.send(Tools.parseReply(this.config.ans_AV_inactive));
+        }
         Application.modules.Discord.setMessageSent();
     }
 

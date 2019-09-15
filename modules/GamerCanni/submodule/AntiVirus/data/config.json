@@ -1,0 +1,56 @@
+{
+  "test": "test",
+  "DM_create_player_request": "You are not a AVS (AntiVirusSystem) member.\nPlease create special AVS account. (Type: \"create new AVS\")",
+
+  "DM_signup_1": "--Signup Message--\nChoose name.",
+  "DM_signup_2": "Is name \"%s\" correct? (Yes/No)",
+  "DM_signup_3": "Choose Name again.",
+  "DM_signup_4": "AVS account created.\n--Wlecome to the team message--\n(check your stats with \"stats\")",
+
+  "displayStats": "AVS (AntiVirusSystem) Account:\nName: %s\nLevel: %s\nExp: %s/%s\nCanni Coins: %s\n\nHP: %s\nAttack: %s\nDefense: %s\nInitiative: %s\n\nWeapon: %s\nLevel: %s\nDirect Damage: %s\nHit Damage: %s",
+
+  "startcombat": "Start combat. Encounter.\nYour Enemy is: %s\nFirst Round.\n(strike, brute force, charge, disrupt)",
+
+  "player_strike_message": "%s, you hit %s with a strike attack and caused %s damage.\n%s now has %s HP.\n",
+  "enemy_strike_message": "%s, you were hit by %s with a strike attack and received %s damage.\n%s now has %s HP.\n",
+
+  "player_brute_message": "%s, you hit %s with a brute force attack and caused %s damage.\n%s now has %s HP.\n",
+  "enemy_brute_message": "%s, you were hit by %s with a brute force attack and received %s damage.\n%s now has %s HP.\n",
+
+  "player_charge_message": "%s, you are charging your attack. Your current charge is %s.\n",
+  "enemy_charge_message": "%s is charging its attack. Its current charge is %s\n",
+
+  "player_release_message": "%s, you hit %s with your charged attack and caused %s damage.\n%s now has %s HP.\n",
+  "enemy_release_message": "%s, you were hit by %s with a its charged attack and received %s damage.\n%s now has %s HP.\n",
+
+  "player_disrupt_message": "%s, you hit %s with a disrupt attack and caused %s damage.\n%s now has %s HP.\n",
+  "enemy_disrupt_message": "%s, you were hit by %s with a disrupt attack and received %s damage.\n%s now has %s HP.\n",
+
+  "player_release_fail_message": "You were hit while you were charging. The accumulated charge exploded and caused %s damage.\n%s now has %s HP.\n",
+  "enemy_release_fail_message": "You hit %s while it was charging. The accumulated charge exploded and caused %s damage.\n%s now has %s HP.\n",
+
+
+
+  "player_defeat" : "\n%s your HP dropped to 0. You can not continue fighting.\n",
+  "enemy_defeat": "\n%s you defeated %s.\nCongratulation!\n",
+
+  "exp_gain": "%s, you gained %s Exp.\n",
+  "cc_gain": "%s you gained %s Canni Coins.\n",
+
+  "levelup": "Congratulations %s!\nYour Level increased!\nYour are Level %s. (Next Level Up: %s/%s exp)\n\n",
+
+  "info": "Infosheet of AVS member: %s\n",
+  "info_normal" : "Everything is normal.",
+  "info_available_stat_points" : "You have status points available. (%s available status points)\n",
+
+  "points_no_available_points": "%s, you currently don´t have any available status points.",
+  "points_available_point": "%s, you have %s remaining status point.\n\n",
+  "points_available_points": "%s, you have %s remaining status points\n\n",
+  "points_stats": "Your current stats are:\nAttack: %s\nDefense: %s\nInitiative: %s\n\n",
+  "points_question": "Which of your stats would you like to increase?\n",
+  "increase_atk": "Attack increased by 1.\n\n",
+  "increase_def": "Defense increased by 1.\n\n",
+  "increase_ini": "Initiative increased by 1.\n\n",
+  "points_stop": "Point distribution has stopped."
+
+}
