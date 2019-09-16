@@ -9,7 +9,8 @@
 
   "displayStats": "AVS (AntiVirusSystem) Account:\nName: %s\nLevel: %s\nExp: %s/%s\nCanni Coins: %s\n\nHP: %s\nAttack: %s\nDefense: %s\nInitiative: %s\n\nWeapon: %s\nLevel: %s\nDirect Damage: %s\nHit Damage: %s",
 
-  "startcombat": "Start combat. Encounter.\nYour Enemy is: %s\nFirst Round.\n(strike, brute force, charge, disrupt)",
+  "startcombat": "Start combat. Encounter.\nYour Enemy is: %s\nFirst Round.\n(strike, brute force, charge, disrupt, item)",
+  "battle_choose_move": "%s, Choose a move.\n(strike, brute force, charge, disrupt, item)",
 
   "player_strike_message": "%s, you hit %s with a strike attack and caused %s damage.\n%s now has %s HP.\n",
   "enemy_strike_message": "%s, you were hit by %s with a strike attack and received %s damage.\n%s now has %s HP.\n",
@@ -21,7 +22,7 @@
   "enemy_charge_message": "%s is charging its attack. Its current charge is %s\n",
 
   "player_release_message": "%s, you hit %s with your charged attack and caused %s damage.\n%s now has %s HP.\n",
-  "enemy_release_message": "%s, you were hit by %s with a its charged attack and received %s damage.\n%s now has %s HP.\n",
+  "enemy_release_message": "%s, you were hit by %s with its charged attack and received %s damage.\n%s now has %s HP.\n",
 
   "player_disrupt_message": "%s, you hit %s with a disrupt attack and caused %s damage.\n%s now has %s HP.\n",
   "enemy_disrupt_message": "%s, you were hit by %s with a disrupt attack and received %s damage.\n%s now has %s HP.\n",
@@ -51,6 +52,26 @@
   "increase_atk": "Attack increased by 1.\n\n",
   "increase_def": "Defense increased by 1.\n\n",
   "increase_ini": "Initiative increased by 1.\n\n",
-  "points_stop": "Point distribution has stopped."
+  "points_stop": "Point distribution has stopped.",
 
+  "use_item": "\n%s used %s.\n",
+
+  "heal_player_full": "HP are refilled to max.\n",
+  "heal_player_part": "HP are healed by %s. The current HP are now: %s.\n",
+  "heal_player_complete": "HP are healed to max. The current HP are now: %s.\n",
+  "heal_enemy_full": "HP are refilled to max.\n",
+  "heal_enemy_part": "HP are healed by %s. The current HP are now: %s.\n",
+  "heal_enemy_complete": "HP are healed to max. The current HP are now: %s.\n",
+
+  "item_damage_enemy": "%s received %s damage and now has %s HP.\n",
+  "item_damage_player": "%s received %s damage and now has %s HP.\n",
+
+  "startbattle_item": "Select an item:\n",
+  "selector_no_items": "%s, you don´t have any items your inventory.",
+  "selector_no_items_battle": "%s, you don´t have any items for the use in combat in your inventory.",
+  "selector_pattern": "%s:  %s x %s\n",
+  "battle_item_invalid": "%s, selection is invalid. Select again.\n",
+
+  "startinventory": "These are all items in your inventory:\n",
+  "inventory_not_usable": "The item %s is currently not usable.\n"
 }

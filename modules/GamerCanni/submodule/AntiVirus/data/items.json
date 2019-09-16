@@ -1,0 +1,51 @@
+{
+  "items" : [
+    {"name": "Small Bit Refresh",
+      "id": 1,
+      "value": 5,
+      "types": ["battle-item"],
+      "subtype": "heal",
+      "restoreHP": 5,
+      "heal_full": false,
+      "reusable": false,
+      "info": "%s restores up to %s lost HP.\n\n",
+
+      "number": 1
+    },
+    {"name": "Small Data-Bomb",
+      "id": 2,
+      "value": 5,
+      "types": ["battle-item"],
+      "subtype": "damage",
+      "damage": 5,
+      "reusable": false,
+      "info": "%s causes up to %s damage to an enemy.\n\n",
+
+      "number": 1
+    },
+    {"name": "Small Data-Drain",
+      "id": 3,
+      "value": 7,
+      "types": ["battle-item"],
+      "subtype": "drain",
+      "damage": 5,
+      "conversion": 0.5,
+      "reusable": false,
+      "info": "%s drains HP form an enemy and adds %s of the caused damage to your HP.\n\n",
+
+      "number": 1
+    },
+    {"name": "Small Data-Fragment",
+      "id": 4,
+      "value": 10,
+      "types": ["usable-item"],
+      "subtype": "exp",
+      "experience": 5,
+      "range": 2,
+      "reusable": false,
+      "info": "%s contains knowledge and grants you up to %s exp.\n\n",
+
+      "number": 1
+    }
+  ]
+}

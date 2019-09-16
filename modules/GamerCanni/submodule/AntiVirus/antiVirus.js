@@ -14,6 +14,7 @@ var enemies = [];
 var virus = [];
 var worm = [];
 var trojan =  [];
+var items = [];
 
 var signup_on = {};
 var signup_state = {};
@@ -25,6 +26,7 @@ var dev = false;
 //Debug "Application.modules.Discord.setMessageSent();" not yet implemented.
 module.exports = class AntiVirus {
     static debug(val) {debug = val; dev = val;}
+
     static start() {
         if (debug) {
             av_path = ".";
@@ -39,16 +41,21 @@ module.exports = class AntiVirus {
         if (signup_on[msg.author.id]) {
             return this.signup_manager(msg, input);
         }
-
         input = input.toLocaleLowerCase();
 
         if (this.check_player(msg)) {
             let p = this.get_player_by_id(msg.author.id);
-
             if (p.battle_on) {
                 return this.battle_manager(msg, input, p)
             } else if (p.stat_select_on) {
-                return this.point_manager(msg, input, p)
+                return this.point_manager(msg, input, p);
+            } else if(p.inventory_on) {
+                if (p.inventory.length) {
+                    return this.inventory_manager(msg, input, p);
+                } else {
+                    p.inventory_on = false;
+                }
+
             }
 
             if (dev) {
@@ -62,6 +69,8 @@ module.exports = class AntiVirus {
                 this.displayInfo(msg, p)
             } else if(this.input_is_list(input,["use points", "up"])) {
                 this.point_start(msg,p)
+            } else if(this.input_is_list(input,["inventory", "inv"])) {
+                this.inventory_start(msg,p)
             }
 
 
@@ -75,14 +84,13 @@ module.exports = class AntiVirus {
                 this.sender(msg,config.DM_create_player_request);
             }
         }
-
-
     }
 
 
     static load() {
         this.loadConfig();
         this.loadWeapons();
+        this.loadItems();
         this.loadPlayerData();
         this.loadEnemies();
 
@@ -123,7 +131,7 @@ module.exports = class AntiVirus {
         try {
             data = Tools.loadCommentedConfigFile(path);
         } catch (e) {
-            throw new Error("config of module ... contains invalid json data: " + e.toString());
+            data = {};
         }
 
         if (data) {
@@ -163,6 +171,23 @@ module.exports = class AntiVirus {
         }
     }
 
+    static loadItems() {
+        let path = av_path + "/data/items.json";
+        let data, tmp;
+        try {
+            data = Tools.loadCommentedConfigFile(path);
+        } catch (e) {
+            throw new Error("config of module ... contains invalid json data: " + e.toString());
+        }
+
+        if (data) {
+            data.items.forEach(item => {
+                tmp = new Item(true, item);
+                items.push(tmp);
+            });
+        }
+    }
+
     static save_players() {
         let path = av_path + "/data/data.json";
         let save;
@@ -189,11 +214,22 @@ module.exports = class AntiVirus {
     static get_player_by_id(id) {
         let player;
         player_data.forEach(p => {
-            if (p.id === id) {
+            if (p.id === parseInt(id)) {
                 player = p;
             }
         });
         return player;
+    }
+
+    //obsolete
+    static get_item_by_id(id) {
+        let item = undefined;
+        items.forEach(i => {
+            if (i.id === parseInt(id)) {
+                item = i;
+            }
+        });
+        return item;
     }
 
     static input_includes(input, text) {
@@ -224,6 +260,21 @@ module.exports = class AntiVirus {
         return bool;
     }
 
+    static input_starts_word(input, text) {
+        let pre = input.split(" ");
+        return pre[0] === text;
+    }
+
+    static input_starts_word_list(input, list) {
+        let bool = false;
+        list.forEach(text => {
+            if (!bool) {
+                bool = this.input_starts_word(input, text);
+            }
+        });
+        return bool;
+    }
+
     static signup_start(msg) {
         signup_on[msg.author.id] = true;
         signup_state[msg.author.id] = 0;
@@ -238,12 +289,12 @@ module.exports = class AntiVirus {
             this.senderDM(msg,Tools.parseReply(config.DM_signup_2, [input]));
         } else if (state === 1) {
             input = input.toLocaleLowerCase();
-            if (input === "yes") {
+            if (this.input_is_list(input, ["yes","y"])) {
                 this.new_player(msg, signup_name[msg.author.id]);
                 this.senderDM(msg,config.DM_signup_4);
                 signup_on[msg.author.id] = false;
                 signup_state[msg.author.id] = 2;
-            } else if (input === "no") {
+            } else if (this.input_is_list(input, ["no","n"])) {
                 signup_state[msg.author.id] = 0;
                 this.senderDM(msg,Tools.parseReply(config.DM_signup_3))
             }
@@ -256,132 +307,234 @@ module.exports = class AntiVirus {
     this.sender(msg, content);
 }
 
-static displayInfo(msg,p) {
-    let content = p.info();
-    this.sender(msg, content);
-}
-
-static battle_start(msg, p) {
-    let mon = new Enemy(true, trojan[1]);
-    p.battle = new Battle_PvE(p, mon);
-    this.sender(msg, Tools.parseReply(config.startcombat,[mon.name]))
-}
-
-static battle_manager(msg, input, p) {
-    input = input.toLocaleLowerCase();
-    let battle = p.battle;
-    if (battle.player.charge_on) {
-        if (input === "charge" || input === "ch") {
-            this.sender(msg, battle.do_round("C"));
-        } else if (input === "release" || input === "re") {
-            this.sender(msg, battle.do_round("R"));
-        }
-    } else {
-        if (input === "strike" || input === "s") {
-            this.sender(msg, battle.do_round("S"));
-        } else if (input === "brute force" || input === "br") {
-            this.sender(msg, battle.do_round("B"));
-        } else if (input === "charge" || input === "ch") {
-            this.sender(msg, battle.do_round("C"));
-        } else if (input === "disrupt" || input === "dis") {
-            this.sender(msg, battle.do_round("D"));
-        }
-    }
-}
-
-static point_start(msg, p) {
-    let message = "";
-    if (p.stat_points) {
-        if (p.stat_points === 1) {
-            message += Tools.parseReply(config.points_available_point,[p.name, p.stat_points]);
-        } else {
-            message += Tools.parseReply(config.points_available_points,[p.name, p.stat_points]);
-        }
-        message += Tools.parseReply(config.points_stats,[p.atk,p.def,p.ini]);
-        message += Tools.parseReply(config.points_question);
-        p.stat_select_on = true;
-    } else {
-        message = Tools.parseReply(config.points_no_available_points,[p.name]);
-    }
-    this.senderDM(msg, message);
-}
-
-static point_manager(msg, input, p) {
-    let message = "";
-    if (this.input_is_list(input, ["attack","atk"])) {
-        p.atk += 1;
-        p.stat_points -= 1;
-        message += Tools.parseReply(config.increase_atk)
-    } else if (this.input_is_list(input, ["defense","def"])) {
-        p.def += 1;
-        p.stat_points -= 1;
-        message += Tools.parseReply(config.increase_def)
-    } else if (this.input_is_list(input, ["initiative","init"])) {
-        p.ini += 1;
-        p.stat_points -= 1;
-        message += Tools.parseReply(config.increase_ini)
-    } else if (this.input_is_list(input, ["stop","s"])) {
-        p.stat_select_on = false;
-        message += Tools.parseReply(config.points_stop);
+    static displayInfo(msg,p) {
+        let content = p.info();
+        this.sender(msg, content);
     }
 
-    if(p.stat_points && p.stat_select_on) {
-        if (p.stat_points === 1) {
-            message += Tools.parseReply(config.points_available_point,[p.name, p.stat_points]);
-        } else {
-            message += Tools.parseReply(config.points_available_points,[p.name, p.stat_points]);
-        }
-        message += Tools.parseReply(config.points_stats,[p.atk,p.def,p.ini]);
-        message += Tools.parseReply(config.points_question);
-    } else {
-        p.stat_select_on = false;
-    }
-    this.senderDM(msg, message);
-}
 
-//Debug
-static sender(msg, content) {
-    if (debug) {
-        console.log(content);
-    } else {
-        msg.channel.send(content);
-        Application.modules.Discord.setMessageSent();
+
+    static battle_start(msg, p) {
+        let mon = new Enemy(true, virus[0]);
+        p.battle = new Battle_PvE(p, mon);
+        this.sender(msg, Tools.parseReply(config.startcombat,[mon.name]));
     }
 
-}
-
-static senderDM(msg, content) {
-    if (debug) {
-        console.log("DM: " + content);
-    } else {
-        msg.author.send(content);
-        Application.modules.Discord.setMessageSent();
-    }
-
-}
-
-static dev_manger(msg, p, input) {
-    let pre, num, message;
-    if (this.input_includes(input, "gain_exp")) {
-        pre = input.split(" ");
-        if (pre.length > 1) {
-            num = Math.abs(pre[1]);
-            if (num) {
-                message = p.gain_exp(num);
-                this.sender(msg, message);
+    static battle_manager(msg, input, p) {
+        input = input.toLocaleLowerCase();
+        let battle = p.battle;
+        if (battle.player.charge_on) {
+            if (this.input_is_list(input, ["charge","ch"])) {
+                this.sender(msg, battle.do_round("C"));
+            } else if (this.input_is_list(input, ["release","re"])) {
+                this.sender(msg, battle.do_round("R"));
             }
-        }
-    } else if (this.input_includes(input, "gain_cc")) {
-        pre = input.split(" ");
-        if (pre.length > 1) {
-            num = Math.abs(pre[1]);
-            if (num) {
-                message = p.gain_cc(num);
-                this.sender(msg, message);
+        } else if (p.battle_item_on) {
+            this.battle_item_manager(msg, input, battle, p)
+        } else {
+            if (this.input_is_list(input, ["strike","st"])) {
+                this.sender(msg, battle.do_round("S"));
+            } else if (this.input_is_list(input, ["brute force","br"])) {
+                this.sender(msg, battle.do_round("B"));
+            } else if (this.input_is_list(input, ["charge","ch"])) {
+                this.sender(msg, battle.do_round("C"));
+            } else if (this.input_is_list(input, ["disrupt","dis"])) {
+                this.sender(msg, battle.do_round("D"));
+            } else if (this.input_is_list(input, ["item","i"])) {
+                this.battle_item_use_start(msg, battle, p);
             }
         }
     }
-}
+
+
+    static battle_item_use_start(msg, battle, p) {
+        let message = "";
+        if (p.items_battle_count === 0) {
+            message += p.selector_battle;
+        } else {
+            p.battle_item_on = true;
+            message += Tools.parseReply(config.startbattle_item);
+            message += p.selector_battle;
+        }
+        this.sender(msg, message);
+    }
+
+    static battle_item_manager(msg, input, battle, p) {
+        let num = parseInt(input);
+        if (num) {
+            if (num <= p.items_battle_count) {
+                this.sender(msg, battle.do_round("I", num - 1));
+                p.battle_item_on = false;
+            }
+        } else {
+            if (this.input_is_list(input, ["back","b"])) {
+                p.battle_item_on = false;
+                this.sender(msg, Tools.parseReply(config.battle_choose_move,[p.name]))
+            } else {
+                this.sender(msg, Tools.parseReply(config.battle_item_invalid, [p.name]))
+            }
+        }
+    }
+
+
+    static point_start(msg, p) {
+        let message = "";
+        if (p.stat_points) {
+            if (p.stat_points === 1) {
+                message += Tools.parseReply(config.points_available_point,[p.name, p.stat_points]);
+            } else {
+                message += Tools.parseReply(config.points_available_points,[p.name, p.stat_points]);
+            }
+            message += Tools.parseReply(config.points_stats,[p.atk,p.def,p.ini]);
+            message += Tools.parseReply(config.points_question);
+            p.stat_select_on = true;
+        } else {
+            message = Tools.parseReply(config.points_no_available_points,[p.name]);
+        }
+        this.senderDM(msg, message);
+    }
+
+    static point_manager(msg, input, p) {
+        let message = "";
+        if (this.input_is_list(input, ["attack","atk"])) {
+            p.atk += 1;
+            p.stat_points -= 1;
+            message += Tools.parseReply(config.increase_atk)
+        } else if (this.input_is_list(input, ["defense","def"])) {
+            p.def += 1;
+            p.stat_points -= 1;
+            message += Tools.parseReply(config.increase_def)
+        } else if (this.input_is_list(input, ["initiative","init"])) {
+            p.ini += 1;
+            p.stat_points -= 1;
+            message += Tools.parseReply(config.increase_ini)
+        } else if (this.input_is_list(input, ["stop","s"])) {
+            p.stat_select_on = false;
+            message += Tools.parseReply(config.points_stop);
+        }
+
+        if(p.stat_points && p.stat_select_on) {
+            if (p.stat_points === 1) {
+                message += Tools.parseReply(config.points_available_point,[p.name, p.stat_points]);
+            } else {
+                message += Tools.parseReply(config.points_available_points,[p.name, p.stat_points]);
+            }
+            message += Tools.parseReply(config.points_stats,[p.atk,p.def,p.ini]);
+            message += Tools.parseReply(config.points_question);
+        } else {
+            p.stat_select_on = false;
+        }
+        this.senderDM(msg, message);
+    }
+
+    static inventory_start(msg, p) {
+        let message = "";
+        if (p.items_count === 0) {
+            message += p.selector;
+        } else {
+            p.inventory_on = true;
+            message += Tools.parseReply(config.startinventory);
+            message += p.selector;
+        }
+        this.senderDM(msg, message);
+    }
+
+    static inventory_manager(msg, input, p) {
+        let pre, num, item;
+        let message = "";
+        if (this.input_starts_word_list(input,["info", "i"])) {
+            pre = input.split(" ");
+            if (pre.length >= 2) {
+                num = parseInt(pre[1]);
+                if (num) {
+                    if (num <= p.inventory.length) {
+                        message += p.inventory[num - 1].info;
+                        this.senderDM(msg, message);
+                    }
+                }
+            }
+        }
+        if (this.input_starts_word_list(input,["use", "u"])) {
+            pre = input.split(" ");
+            if (pre.length >= 2) {
+                num = parseInt(pre[1]);
+                if (num) {
+                    if (num <= p.inventory.length) {
+                        item = p.inventory[num - 1];
+                        if (item.types.includes("usable-item")) {
+                            message += item.use([p], false);
+                        } else {
+                            message += Tools.parseReply(config.inventory_not_usable, [item.name]);
+                        }
+                        message += Tools.parseReply(config.startinventory);
+                        message += p.selector;
+                        this.senderDM(msg, message);
+                    }
+                }
+            }
+        }
+        if (this.input_is_list(input, ["back","b"])) {
+            p.inventory_on = false;
+        }
+    }
+
+
+    //Debug
+    static sender(msg, content) {
+        if (debug) {
+            console.log(content);
+        } else {
+            msg.channel.send(content);
+            Application.modules.Discord.setMessageSent();
+        }
+
+    }
+
+    static senderDM(msg, content) {
+        if (debug) {
+            console.log("DM: " + content);
+        } else {
+            msg.author.send(content);
+            Application.modules.Discord.setMessageSent();
+        }
+
+    }
+
+    static dev_manger(msg, p, input) {
+        let pre, num, message;
+        if (this.input_includes(input, "gain_exp")) {
+            pre = input.split(" ");
+            if (pre.length > 1) {
+                num = parseInt(pre[1]);
+                if (num) {
+                    message = p.gain_exp(num);
+                    this.sender(msg, message);
+                }
+            }
+        }
+        if (this.input_includes(input, "gain_cc")) {
+            pre = input.split(" ");
+            if (pre.length > 1) {
+                num = parseInt(pre[1]);
+                if (num) {
+                    message = p.gain_cc(num);
+                    this.sender(msg, message);
+                }
+            }
+        }
+        if (this.input_includes(input, "get_item")) {
+            pre = input.split(" ");
+            if (pre.length > 1) {
+                num = parseInt(pre[1]);
+                if (num) {
+                    p.add_item(num);
+                }
+            }
+        }
+        if (this.input_includes(input, "save")) {
+            this.save_players();
+        }
+    }
 };
 
 
@@ -399,6 +552,7 @@ class Player {
             this.weapon = new Weapon(true,data.weapon);
             this.experiance = data.experiance;
             this.cc = data.cc;
+            this.loadInventory(data.inventory);
         } else {
             this.lv = 1;
             this.atk = 1;
@@ -410,6 +564,8 @@ class Player {
             this.weapon = starter_weapons[random];
             this.experiance = 0;
             this.cc = 0;
+            this.inventory = [];
+            this.battle_inventory = [];
         }
         this.curHP = this.maxHP;
 
@@ -423,6 +579,24 @@ class Player {
 
         this.stat_point_increase = 2;
         this.maxHP_increase = 5;
+
+        this.inventory_on = false;
+
+        this.item_selector();
+    }
+
+    loadInventory(data) {
+        let inventory = [];
+        let battle_inventory = [];
+        data.forEach(item => {
+            let it = new Item(true, item);
+            inventory.push(it);
+            if (item.types.includes("battle-item")) {
+                battle_inventory.push(it);
+            }
+        });
+        this.inventory = inventory;
+        this.battle_inventory = battle_inventory;
     }
 
     stats() {
@@ -492,6 +666,100 @@ class Player {
     levelup_function(x = 20) {
         return this.lv * x
     }
+
+    heal(full = false, amount = 0) {
+        let message = "";
+        if (full) {
+            this.curHP = this.maxHP;
+            message += Tools.parseReply(config.heal_player_full)
+        } else {
+            if (amount + this.curHP < this.maxHP) {
+                this.curHP += amount;
+                message += Tools.parseReply(config.heal_player_part, [amount, this.curHP])
+            } else {
+                this.curHP = this.maxHP;
+                message += Tools.parseReply(config.heal_player_complete, [this.curHP])
+            }
+        }
+        return message;
+    }
+
+    item_selector() {
+        let sel = "";
+        let sel_bat = "";
+        let count = 1;
+        let count_bat = 1;
+
+        if (this.inventory.length === 0) {
+            sel += Tools.parseReply(config.selector_no_items, [this.name]);
+            this.items_count = count - 1;
+        } else {
+            this.inventory.forEach(item => {
+                sel += Tools.parseReply(config.selector_pattern, [count, item.number, item.name]);
+                count += 1;
+            });
+            this.items_count = count - 1;
+        }
+
+        if (this.battle_inventory.length === 0) {
+            sel_bat += Tools.parseReply(config.selector_no_items_battle, [this.name]);
+            this.items_battle_count = count_bat - 1
+        } else {
+            this.battle_inventory.forEach(item => {
+                sel_bat += Tools.parseReply(config.selector_pattern, [count_bat, item.number, item.name]);
+                count_bat += 1;
+            });
+            this.items_battle_count = count_bat - 1
+        }
+
+        this.selector = sel;
+        this.selector_battle = sel_bat;
+    }
+
+    inventory_get_item(id) {
+        let obj = undefined;
+        this.inventory.forEach(item => {
+            if (item.id === parseInt(id)) {
+                obj = item;
+            }
+        });
+        return obj;
+    }
+
+    add_item(id, num = 1) {
+        let item = this.inventory_get_item(id);
+        if (item) {
+            item.number += num;
+        } else {
+            item = new Item(true, Item.get_item_by_id(id));
+            if (item) {
+                item.number = num;
+                this.inventory.push(item);
+                if (item.types.includes("battle-item")) {
+                    this.battle_inventory.push(item);
+                }
+            }
+        }
+        this.item_selector();
+    }
+
+    sub_item(id, num = 1) {
+        let item = this.inventory_get_item(id);
+        if (item) {
+            item.number -= num;
+            if (item.number <= 0) {
+                let index = this.inventory.indexOf(item);
+                if (index > -1) {
+                    this.inventory.splice(index, 1);
+                }
+                index = this.battle_inventory.indexOf(item);
+                if (index > -1) {
+                    this.battle_inventory.splice(index, 1);
+                }
+            }
+        }
+        this.item_selector();
+    }
 }
 
 class Weapon {
@@ -509,6 +777,161 @@ class Weapon {
             this.type = "weapon";
         }
     }
+}
+
+class Item {
+    constructor(load, data) {
+        if (load) {
+            this.name = data.name;
+            this.id = data.id;
+            this.value = data.value;
+            this.types = data.types;
+            this.subtype = data.subtype;
+            this.reusable = data.reusable;
+
+            this.restoreHP = data.restoreHP;
+            this.heal_full = data.heal_full;
+            this.damage = data.damage;
+            this.conversion = data.conversion;
+            this.experience = data.experience;
+            this.range = data.range;
+
+            this.number = data.number;
+            this.loadinfo(data.info);
+        }
+    }
+
+    loadinfo(pre) {
+        let text = "";
+        if (this.subtype === "heal") {
+            text = Tools.parseReply(pre, [this.name, this.restoreHP])
+        } else if (this.subtype === "damage") {
+            text = Tools.parseReply(pre, [this.name, this.damage])
+        } else if (this.subtype === "drain") {
+            text = Tools.parseReply(pre, [this.name, this.damage, this.conversion])
+        }else if (this.subtype === "exp") {
+            text = Tools.parseReply(pre, [this.name, this.experience + this.range])
+        } else {
+            text = "No Info Available";
+        }
+
+        this.info = text;
+    }
+
+    static get_item_by_id(id) {
+        let item = undefined;
+        items.forEach(i => {
+            if (i.id === parseInt(id)) {
+                item = i;
+            }
+        });
+        return item;
+    }
+
+    use(pass, battle_on = true) {
+        let message = "";
+        if (battle_on) {
+            if (this.types.includes("battle-item")) {
+                message += this.battle_use(pass);
+            }
+        } else {
+            if (this.types.includes("usable-item")) {
+                message += this.normal_use(pass);
+            }
+        }
+
+        message += "\n";
+        return message;
+    }
+
+    consume(user) {
+        if (!this.reusable) {
+            user.sub_item(this.id, 1);
+        }
+    }
+
+    normal_use([user]) {
+        let message = "";
+
+        message += Tools.parseReply(config.use_item, [user.name, this.name]);
+
+        if (this.subtype === "exp") {
+            message += this.gain_exp(user);
+        }
+
+        this.consume(user);
+        return message;
+    }
+
+    battle_use([battle, user, target = user]) {
+        let message = "";
+
+        message += Tools.parseReply(config.use_item, [user.name, this.name]);
+
+        if (this.subtype === "heal") {
+            message += this.heal(target);
+        }
+        if (this.subtype === "damage") {
+            message += this.apply_damage(battle, user,target);
+        }
+        if (this.subtype === "drain") {
+            message += this.apply_drain(battle, user,target);
+        }
+
+
+        this.consume(user);
+        return message;
+    }
+
+    static auto_select_target(battle,user) {
+        if (user.type === "player") {
+            return battle.enemy;
+        } else if (user.type === "enemy") {
+            return battle.player;
+        } else {
+            console.log("auto select target type error!");
+        }
+    }
+
+    heal(target) {
+        return target.heal(this.heal_full, this.restoreHP);
+    }
+
+    apply_damage(battle, user, target) {
+        let message = "";
+
+        if (user === target) {
+            target = Item.auto_select_target(battle, user);
+        }
+
+        this.dealt_damage = target.receive_damage(this.damage)[0];
+
+        if (target.type === "enemy") {
+            message += Tools.parseReply(config.item_damage_enemy, [target.name, this.dealt_damage, target.curHP])
+        } else if (target.type === "player") {
+            message += Tools.parseReply(config.item_damage_player, [target.name, this.dealt_damage, target.curHP])
+        } else {
+            console.log("apply damage type error!");
+        }
+        return message;
+    }
+
+    apply_drain(battle, user, target) {
+        let message = "";
+        if (user === target) {
+            target = Item.auto_select_target(battle, user);
+        }
+        message += this.apply_damage(battle,user,target);
+        this.restoreHP = Math.ceil(this.dealt_damage*this.conversion);
+        message += this.heal(user);
+        return message;
+    }
+
+    gain_exp(user) {
+        let ran = Tools.getRandomIntFromInterval(-this.range,this.range);
+        return user.gain_exp(this.experience + ran);
+    }
+
 }
 
 class Enemy {
@@ -587,6 +1010,23 @@ class Enemy {
         return message;
     }
 
+    heal(full = false, amount = 0) {
+        let message = "";
+        if (full) {
+            this.curHP = this.maxHP;
+            message += Tools.parseReply(config.heal_enemy_full)
+        } else {
+            if (amount + this.curHP < this.maxHP) {
+                this.curHP += amount;
+                message += Tools.parseReply(config.heal_enemy_part, [amount, this.curHP])
+            } else {
+                this.curHP = this.maxHP;
+                message += Tools.parseReply(config.heal_enemy_complete, [this.curHP])
+            }
+        }
+        return message;
+    }
+
 }
 
 class Battle_PvE{
@@ -601,15 +1041,19 @@ class Battle_PvE{
         player.charge_on = false;
         enemy.charge_count = 0;
         player.charge_count = 0;
+        player.battle_item_on = false;
+        player.item_selector();
 
         this.id = player.id;
         this.player = player;
         this.enemy = enemy;
 
+        this.type = "battle";
+
         this.end_battle = false;
     }
 
-    do_round(p_attack) {
+    do_round(p_attack, num = 0) {
         let first, second, p_init_mod, e_init_mod;
 
         this.message = "";
@@ -622,9 +1066,9 @@ class Battle_PvE{
 
         [first,second] = this.battle_order(p_init_mod, e_init_mod);
 
-        this.attack_processor(first,second);
+        this.attack_processor(first,second, num);
         if (!this.defeat_check(first,second)) {
-            this.attack_processor(second,first);
+            this.attack_processor(second,first, num);
             this.defeat_check(second, first);
         }
 
@@ -651,10 +1095,13 @@ class Battle_PvE{
             case "brute": {
                 return -1 * entity.lv;
             }
+            default : {
+                return 0;
+            }
         }
     };
 
-    attack_processor(attacker, defender) {
+    attack_processor(attacker, defender, num) {
 
         switch (attacker.battle_attack) {
             case "strike":{
@@ -675,6 +1122,10 @@ class Battle_PvE{
             }
             case "disrupt":{
                 this.disrupt(attacker, defender);
+                break;
+            }
+            case "item" : {
+                this.item_use(attacker, defender, num);
                 break;
             }
             default : {
@@ -805,6 +1256,10 @@ class Battle_PvE{
 
     }
 
+    item_use(attacker, defender, num) {
+        this.message += attacker.battle_inventory[num].use([this, attacker]);
+    }
+
 
     strike_message(attacker, defender, damage) {
         switch (attacker.type) {
@@ -931,6 +1386,12 @@ class Battle_PvE{
     }
 
     battle_order(p_mod = 0, e_mod = 0) {
+
+        if (this.player.battle_attack === "item" && this.enemy.battle_attack !== "item") {
+            return [this.player,this.enemy];
+        } else if (this.player.battle_attack !== "item" && this.enemy.battle_attack === "item") {
+            return [this.enemy,this.player];
+        }
         if ((this.player.ini + p_mod) > (this.enemy.ini + e_mod)) {
             return [this.player, this.enemy];
         } else if ((this.player.ini + p_mod) < (this.enemy.ini + e_mod)) {
@@ -962,6 +1423,9 @@ class Battle_PvE{
             }
             case "D" : {
                 return "disrupt";
+            }
+            case "I" : {
+                return "item";
             }
             default: {
                 console.log("battle char match error!");
