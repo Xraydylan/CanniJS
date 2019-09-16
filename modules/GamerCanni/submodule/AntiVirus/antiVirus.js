@@ -5,40 +5,48 @@ const Application = require("../../../../lib/Application");
 const Promise = require("bluebird");
 const Tools = require("../../../../lib/Tools");
 const fs = require('fs');
-var av_path;
-var config;
-var player_data = [];
-var weapons = [];
-var starter_weapons = [];
-var enemies = [];
-var virus = [];
-var worm = [];
-var trojan =  [];
-var items = [];
+const Player = require('./classes/player');
+const Weapon = require('./classes/weapon');
+const Item = require('./classes/item');
+const Enemy = require('./classes/enemy');
+const Battle_PvE = require('./classes/battle_pve');
+const AV = require('./antiVirus');
 
-var signup_on = {};
-var signup_state = {};
-var signup_name = {};
+AV.av_path;
+AV.config;
+AV.player_data = [];
+AV.weapons = [];
+AV.starter_weapons = [];
+AV.enemies = [];
+AV.virus = [];
+AV.worm = [];
+AV.trojan =  [];
+AV.items = [];
+
+AV.signup_on = {};
+AV.signup_state = {};
+AV.signup_name = {};
+
+AV.debug_on = false;
+AV.dev = false;
 
 
-var debug = false;
-var dev = false;
 //Debug "Application.modules.Discord.setMessageSent();" not yet implemented.
 module.exports = class AntiVirus {
-    static debug(val) {debug = val; dev = val;}
+    static debug(val) {AV.debug_on = val; AV.dev = val;}
 
     static start() {
-        if (debug) {
-            av_path = ".";
+        if (AV.debug_on) {
+            AV.av_path = ".";
         } else {
-            av_path = Application.config.rootDir + "/modules/GamerCanni/submodule/AntiVirus";
+            AV.av_path = Application.config.rootDir + "/modules/GamerCanni/submodule/AntiVirus";
         }
 
         this.load();
     }
 
     static input(msg, input) {
-        if (signup_on[msg.author.id]) {
+        if (AV.signup_on[msg.author.id]) {
             return this.signup_manager(msg, input);
         }
         input = input.toLocaleLowerCase();
@@ -58,7 +66,7 @@ module.exports = class AntiVirus {
 
             }
 
-            if (dev) {
+            if (AV.dev) {
                 this.dev_manger(msg, p, input);
             }
 
@@ -81,7 +89,7 @@ module.exports = class AntiVirus {
             if (this.input_is(input,"create new avs")) {
                 this.signup_start(msg);
             } else {
-                this.sender(msg,config.DM_create_player_request);
+                this.sender(msg,AV.config.DM_create_player_request);
             }
         }
     }
@@ -97,7 +105,7 @@ module.exports = class AntiVirus {
     }
 
     static loadWeapons() {
-        let path = av_path + "/data/weapons.json";
+        let path = AV.av_path + "/data/weapons.json";
         let data, tmp;
         try {
             data = Tools.loadCommentedConfigFile(path);
@@ -108,25 +116,25 @@ module.exports = class AntiVirus {
         if (data) {
             data.weapons.forEach(item => {
                 tmp = new Weapon(true, item);
-                weapons.push(tmp);
+                AV.weapons.push(tmp);
                 if (tmp.starter) {
-                    starter_weapons.push(tmp)
+                    AV.starter_weapons.push(tmp)
                 }
             });
         }
     }
 
     static loadConfig() {
-        let path = av_path + "/data/config.json";
+        let path = AV.av_path + "/data/config.json";
         try {
-            config = Tools.loadCommentedConfigFile(path);
+            AV.config = Tools.loadCommentedConfigFile(path);
         } catch (e) {
             throw new Error("config of module ... contains invalid json data: " + e.toString());
         }
     }
 
     static loadPlayerData() {
-        let path = av_path + "/data/data.json";
+        let path = AV.av_path + "/data/data.json";
         let data;
         try {
             data = Tools.loadCommentedConfigFile(path);
@@ -137,14 +145,14 @@ module.exports = class AntiVirus {
         if (data) {
             if (data.player_data) {
                 data.player_data.forEach(item => {
-                    player_data.push(new Player(true,item))
+                    AV.player_data.push(new Player(true,item))
                 });
             }
         }
     }
 
     static loadEnemies() {
-        let path = av_path + "/data/enemies.json";
+        let path = AV.av_path + "/data/enemies.json";
         let data, tmp;
         try {
             data = Tools.loadCommentedConfigFile(path);
@@ -155,24 +163,24 @@ module.exports = class AntiVirus {
         if (data) {
             data.virus.forEach(item => {
                 tmp = new Enemy(true, item);
-                virus.push(tmp);
-                enemies.push(tmp);
+                AV.virus.push(tmp);
+                AV.enemies.push(tmp);
             });
             data.worm.forEach(item => {
                 tmp = new Enemy(true, item);
-                worm.push(tmp);
-                enemies.push(tmp);
+                AV.worm.push(tmp);
+                AV.enemies.push(tmp);
             });
             data.trojan.forEach(item => {
                 tmp = new Enemy(true, item);
-                trojan.push(tmp);
-                enemies.push(tmp);
+                AV.trojan.push(tmp);
+                AV.enemies.push(tmp);
             });
         }
     }
 
     static loadItems() {
-        let path = av_path + "/data/items.json";
+        let path = AV.av_path + "/data/items.json";
         let data, tmp;
         try {
             data = Tools.loadCommentedConfigFile(path);
@@ -183,27 +191,27 @@ module.exports = class AntiVirus {
         if (data) {
             data.items.forEach(item => {
                 tmp = new Item(true, item);
-                items.push(tmp);
+                AV.items.push(tmp);
             });
         }
     }
 
     static save_players() {
-        let path = av_path + "/data/data.json";
+        let path = AV.av_path + "/data/data.json";
         let save;
-        save = {"player_data":player_data};
+        save = {"player_data": AV.player_data};
         fs.writeFile(path, JSON.stringify(save), function (err) {if (err) throw err;});
     }
 
     static new_player(msg, name) {
         let data = {"name": name, "id": msg.author.id};
-        player_data.push(new Player(false, data));
+        AV.player_data.push(new Player(false, data));
         this.save_players();
     }
 
     static check_player(msg) {
         let cond = false;
-        player_data.forEach(player => {
+        AV.player_data.forEach(player => {
             if (player.id === msg.author.id) {
                 cond = true;
             }
@@ -213,7 +221,7 @@ module.exports = class AntiVirus {
 
     static get_player_by_id(id) {
         let player;
-        player_data.forEach(p => {
+        AV.player_data.forEach(p => {
             if (p.id === parseInt(id)) {
                 player = p;
             }
@@ -224,7 +232,7 @@ module.exports = class AntiVirus {
     //obsolete
     static get_item_by_id(id) {
         let item = undefined;
-        items.forEach(i => {
+        AV.items.forEach(i => {
             if (i.id === parseInt(id)) {
                 item = i;
             }
@@ -276,27 +284,27 @@ module.exports = class AntiVirus {
     }
 
     static signup_start(msg) {
-        signup_on[msg.author.id] = true;
-        signup_state[msg.author.id] = 0;
-        this.senderDM(msg, config.DM_signup_1)
+        AV.signup_on[msg.author.id] = true;
+        AV.signup_state[msg.author.id] = 0;
+        this.senderDM(msg, AV.config.DM_signup_1)
     }
 
     static signup_manager(msg, input) {
-        let state = signup_state[msg.author.id];
+        let state = AV.signup_state[msg.author.id];
         if (state === 0) {
-            signup_state[msg.author.id] = 1;
-            signup_name[msg.author.id] = input;
-            this.senderDM(msg,Tools.parseReply(config.DM_signup_2, [input]));
+            AV.signup_state[msg.author.id] = 1;
+            AV.signup_name[msg.author.id] = input;
+            this.senderDM(msg,Tools.parseReply(AV.config.DM_signup_2, [input]));
         } else if (state === 1) {
             input = input.toLocaleLowerCase();
             if (this.input_is_list(input, ["yes","y"])) {
-                this.new_player(msg, signup_name[msg.author.id]);
-                this.senderDM(msg,config.DM_signup_4);
-                signup_on[msg.author.id] = false;
-                signup_state[msg.author.id] = 2;
+                this.new_player(msg, AV.signup_name[msg.author.id]);
+                this.senderDM(msg,AV.config.DM_signup_4);
+                AV.signup_on[msg.author.id] = false;
+                AV.signup_state[msg.author.id] = 2;
             } else if (this.input_is_list(input, ["no","n"])) {
-                signup_state[msg.author.id] = 0;
-                this.senderDM(msg,Tools.parseReply(config.DM_signup_3))
+                AV.signup_state[msg.author.id] = 0;
+                this.senderDM(msg,Tools.parseReply(AV.config.DM_signup_3))
             }
 
         }
@@ -315,9 +323,9 @@ module.exports = class AntiVirus {
 
 
     static battle_start(msg, p) {
-        let mon = new Enemy(true, virus[0]);
+        let mon = new Enemy(true, AV.virus[0]);
         p.battle = new Battle_PvE(p, mon);
-        this.sender(msg, Tools.parseReply(config.startcombat,[mon.name]));
+        this.sender(msg, Tools.parseReply(AV.config.startcombat,[mon.name]));
     }
 
     static battle_manager(msg, input, p) {
@@ -353,7 +361,7 @@ module.exports = class AntiVirus {
             message += p.selector_battle;
         } else {
             p.battle_item_on = true;
-            message += Tools.parseReply(config.startbattle_item);
+            message += Tools.parseReply(AV.config.startbattle_item);
             message += p.selector_battle;
         }
         this.sender(msg, message);
@@ -369,9 +377,9 @@ module.exports = class AntiVirus {
         } else {
             if (this.input_is_list(input, ["back","b"])) {
                 p.battle_item_on = false;
-                this.sender(msg, Tools.parseReply(config.battle_choose_move,[p.name]))
+                this.sender(msg, Tools.parseReply(AV.config.battle_choose_move,[p.name]))
             } else {
-                this.sender(msg, Tools.parseReply(config.battle_item_invalid, [p.name]))
+                this.sender(msg, Tools.parseReply(AV.config.battle_item_invalid, [p.name]))
             }
         }
     }
@@ -381,15 +389,15 @@ module.exports = class AntiVirus {
         let message = "";
         if (p.stat_points) {
             if (p.stat_points === 1) {
-                message += Tools.parseReply(config.points_available_point,[p.name, p.stat_points]);
+                message += Tools.parseReply(AV.config.points_available_point,[p.name, p.stat_points]);
             } else {
-                message += Tools.parseReply(config.points_available_points,[p.name, p.stat_points]);
+                message += Tools.parseReply(AV.config.points_available_points,[p.name, p.stat_points]);
             }
-            message += Tools.parseReply(config.points_stats,[p.atk,p.def,p.ini]);
-            message += Tools.parseReply(config.points_question);
+            message += Tools.parseReply(AV.config.points_stats,[p.atk,p.def,p.ini]);
+            message += Tools.parseReply(AV.config.points_question);
             p.stat_select_on = true;
         } else {
-            message = Tools.parseReply(config.points_no_available_points,[p.name]);
+            message = Tools.parseReply(AV.config.points_no_available_points,[p.name]);
         }
         this.senderDM(msg, message);
     }
@@ -399,28 +407,28 @@ module.exports = class AntiVirus {
         if (this.input_is_list(input, ["attack","atk"])) {
             p.atk += 1;
             p.stat_points -= 1;
-            message += Tools.parseReply(config.increase_atk)
+            message += Tools.parseReply(AV.config.increase_atk)
         } else if (this.input_is_list(input, ["defense","def"])) {
             p.def += 1;
             p.stat_points -= 1;
-            message += Tools.parseReply(config.increase_def)
+            message += Tools.parseReply(AV.config.increase_def)
         } else if (this.input_is_list(input, ["initiative","init"])) {
             p.ini += 1;
             p.stat_points -= 1;
-            message += Tools.parseReply(config.increase_ini)
+            message += Tools.parseReply(AV.config.increase_ini)
         } else if (this.input_is_list(input, ["stop","s"])) {
             p.stat_select_on = false;
-            message += Tools.parseReply(config.points_stop);
+            message += Tools.parseReply(AV.config.points_stop);
         }
 
         if(p.stat_points && p.stat_select_on) {
             if (p.stat_points === 1) {
-                message += Tools.parseReply(config.points_available_point,[p.name, p.stat_points]);
+                message += Tools.parseReply(AV.config.points_available_point,[p.name, p.stat_points]);
             } else {
-                message += Tools.parseReply(config.points_available_points,[p.name, p.stat_points]);
+                message += Tools.parseReply(AV.config.points_available_points,[p.name, p.stat_points]);
             }
-            message += Tools.parseReply(config.points_stats,[p.atk,p.def,p.ini]);
-            message += Tools.parseReply(config.points_question);
+            message += Tools.parseReply(AV.config.points_stats,[p.atk,p.def,p.ini]);
+            message += Tools.parseReply(AV.config.points_question);
         } else {
             p.stat_select_on = false;
         }
@@ -433,7 +441,7 @@ module.exports = class AntiVirus {
             message += p.selector;
         } else {
             p.inventory_on = true;
-            message += Tools.parseReply(config.startinventory);
+            message += Tools.parseReply(AV.config.startinventory);
             message += p.selector;
         }
         this.senderDM(msg, message);
@@ -464,9 +472,9 @@ module.exports = class AntiVirus {
                         if (item.types.includes("usable-item")) {
                             message += item.use([p], false);
                         } else {
-                            message += Tools.parseReply(config.inventory_not_usable, [item.name]);
+                            message += Tools.parseReply(AV.config.inventory_not_usable, [item.name]);
                         }
-                        message += Tools.parseReply(config.startinventory);
+                        message += Tools.parseReply(AV.config.startinventory);
                         message += p.selector;
                         this.senderDM(msg, message);
                     }
@@ -481,7 +489,7 @@ module.exports = class AntiVirus {
 
     //Debug
     static sender(msg, content) {
-        if (debug) {
+        if (AV.debug_on) {
             console.log(content);
         } else {
             msg.channel.send(content);
@@ -491,7 +499,7 @@ module.exports = class AntiVirus {
     }
 
     static senderDM(msg, content) {
-        if (debug) {
+        if (AV.debug_on) {
             console.log("DM: " + content);
         } else {
             msg.author.send(content);
@@ -536,900 +544,3 @@ module.exports = class AntiVirus {
         }
     }
 };
-
-
-class Player {
-    constructor(load, data) {
-        this.name = data.name;
-        this.id = data.id;
-        if (load) {
-            this.lv = data.lv;
-            this.atk = data.atk;
-            this.def = data.def;
-            this.ini = data.ini;
-            this.maxHP = data.maxHP;
-            this.state = data.state;
-            this.weapon = new Weapon(true,data.weapon);
-            this.experiance = data.experiance;
-            this.cc = data.cc;
-            this.loadInventory(data.inventory);
-        } else {
-            this.lv = 1;
-            this.atk = 1;
-            this.def = 1;
-            this.ini = 2;
-            this.maxHP = 10;
-            this.state = "alive";
-            let random = Tools.getRandomIntFromInterval(0, starter_weapons.length - 1);
-            this.weapon = starter_weapons[random];
-            this.experiance = 0;
-            this.cc = 0;
-            this.inventory = [];
-            this.battle_inventory = [];
-        }
-        this.curHP = this.maxHP;
-
-        this.type = "player";
-        this.battle_on = false;
-        this.battle_id = undefined;
-        this.battle = undefined;
-
-        this.stat_select_on = false;
-        this.stat_points = 0;
-
-        this.stat_point_increase = 2;
-        this.maxHP_increase = 5;
-
-        this.inventory_on = false;
-
-        this.item_selector();
-    }
-
-    loadInventory(data) {
-        let inventory = [];
-        let battle_inventory = [];
-        data.forEach(item => {
-            let it = new Item(true, item);
-            inventory.push(it);
-            if (item.types.includes("battle-item")) {
-                battle_inventory.push(it);
-            }
-        });
-        this.inventory = inventory;
-        this.battle_inventory = battle_inventory;
-    }
-
-    stats() {
-        return Tools.parseReply(config.displayStats, [this.name,this.lv,this.experiance, this.levelup_function(),this.cc,this.maxHP,this.atk,this.def,this.ini,this.weapon.name,this.weapon.lv,this.weapon.atk,this.weapon.atk_P]);
-    }
-
-    info() {
-        let message = Tools.parseReply(config.info, [this.name]);
-        if (this.stat_points) {
-            message += Tools.parseReply(config.info_available_stat_points, [this.stat_points])
-        } else {
-            message += Tools.parseReply(config.info_normal)
-        }
-        return message;
-    }
-
-    receive_damage(dam) {
-        let net = dam - this.def;
-        if (net > 0) {
-            this.curHP = this.curHP - net;
-            return [net, this.curHP]
-        } else {
-            return [0, this.curHP]
-        }
-    }
-
-    defeated_message(enemy) {
-        let message = Tools.parseReply(config.player_defeat, [this.name]);
-        return message;
-    }
-
-    gain_exp(exp) {
-        this.experiance += exp;
-        let message = Tools.parseReply(config.exp_gain, [this.name, exp]);
-
-        message += this.check_levelup();
-        return message;
-    }
-
-    gain_cc(cc) {
-        this.cc += cc;
-        let message = Tools.parseReply(config.cc_gain, [this.name, cc]);
-        return message;
-    }
-
-    check_levelup() {
-        let message = "";
-        if (this.experiance >= this.levelup_function()) {
-            this.experiance -= this.levelup_function();
-            this.do_levelup();
-            message += Tools.parseReply(config.levelup, [this.name, this.lv, this.experiance, this.levelup_function()]);
-            message += this.check_levelup();
-            return message;
-        }
-        else {
-            return message;
-        }
-
-    }
-
-    do_levelup() {
-        this.lv += 1;
-        this.maxHP += this.maxHP_increase;
-        this.stat_points += this.stat_point_increase;
-    }
-
-    levelup_function(x = 20) {
-        return this.lv * x
-    }
-
-    heal(full = false, amount = 0) {
-        let message = "";
-        if (full) {
-            this.curHP = this.maxHP;
-            message += Tools.parseReply(config.heal_player_full)
-        } else {
-            if (amount + this.curHP < this.maxHP) {
-                this.curHP += amount;
-                message += Tools.parseReply(config.heal_player_part, [amount, this.curHP])
-            } else {
-                this.curHP = this.maxHP;
-                message += Tools.parseReply(config.heal_player_complete, [this.curHP])
-            }
-        }
-        return message;
-    }
-
-    item_selector() {
-        let sel = "";
-        let sel_bat = "";
-        let count = 1;
-        let count_bat = 1;
-
-        if (this.inventory.length === 0) {
-            sel += Tools.parseReply(config.selector_no_items, [this.name]);
-            this.items_count = count - 1;
-        } else {
-            this.inventory.forEach(item => {
-                sel += Tools.parseReply(config.selector_pattern, [count, item.number, item.name]);
-                count += 1;
-            });
-            this.items_count = count - 1;
-        }
-
-        if (this.battle_inventory.length === 0) {
-            sel_bat += Tools.parseReply(config.selector_no_items_battle, [this.name]);
-            this.items_battle_count = count_bat - 1
-        } else {
-            this.battle_inventory.forEach(item => {
-                sel_bat += Tools.parseReply(config.selector_pattern, [count_bat, item.number, item.name]);
-                count_bat += 1;
-            });
-            this.items_battle_count = count_bat - 1
-        }
-
-        this.selector = sel;
-        this.selector_battle = sel_bat;
-    }
-
-    inventory_get_item(id) {
-        let obj = undefined;
-        this.inventory.forEach(item => {
-            if (item.id === parseInt(id)) {
-                obj = item;
-            }
-        });
-        return obj;
-    }
-
-    add_item(id, num = 1) {
-        let item = this.inventory_get_item(id);
-        if (item) {
-            item.number += num;
-        } else {
-            item = new Item(true, Item.get_item_by_id(id));
-            if (item) {
-                item.number = num;
-                this.inventory.push(item);
-                if (item.types.includes("battle-item")) {
-                    this.battle_inventory.push(item);
-                }
-            }
-        }
-        this.item_selector();
-    }
-
-    sub_item(id, num = 1) {
-        let item = this.inventory_get_item(id);
-        if (item) {
-            item.number -= num;
-            if (item.number <= 0) {
-                let index = this.inventory.indexOf(item);
-                if (index > -1) {
-                    this.inventory.splice(index, 1);
-                }
-                index = this.battle_inventory.indexOf(item);
-                if (index > -1) {
-                    this.battle_inventory.splice(index, 1);
-                }
-            }
-        }
-        this.item_selector();
-    }
-}
-
-class Weapon {
-    constructor(load, data) {
-        if(load) {
-            this.name = data.name;
-            this.id = data.id;
-            this.lv = data.lv;
-            this.atk = data.atk;
-            this.atk_P = data.atk_P;
-            this.def = data.def;
-            this.def_P = data.def_P;
-            this.starter = data.starter;
-
-            this.type = "weapon";
-        }
-    }
-}
-
-class Item {
-    constructor(load, data) {
-        if (load) {
-            this.name = data.name;
-            this.id = data.id;
-            this.value = data.value;
-            this.types = data.types;
-            this.subtype = data.subtype;
-            this.reusable = data.reusable;
-
-            this.restoreHP = data.restoreHP;
-            this.heal_full = data.heal_full;
-            this.damage = data.damage;
-            this.conversion = data.conversion;
-            this.experience = data.experience;
-            this.range = data.range;
-
-            this.number = data.number;
-            this.loadinfo(data.info);
-        }
-    }
-
-    loadinfo(pre) {
-        let text = "";
-        if (this.subtype === "heal") {
-            text = Tools.parseReply(pre, [this.name, this.restoreHP])
-        } else if (this.subtype === "damage") {
-            text = Tools.parseReply(pre, [this.name, this.damage])
-        } else if (this.subtype === "drain") {
-            text = Tools.parseReply(pre, [this.name, this.damage, this.conversion])
-        }else if (this.subtype === "exp") {
-            text = Tools.parseReply(pre, [this.name, this.experience + this.range])
-        } else {
-            text = "No Info Available";
-        }
-
-        this.info = text;
-    }
-
-    static get_item_by_id(id) {
-        let item = undefined;
-        items.forEach(i => {
-            if (i.id === parseInt(id)) {
-                item = i;
-            }
-        });
-        return item;
-    }
-
-    use(pass, battle_on = true) {
-        let message = "";
-        if (battle_on) {
-            if (this.types.includes("battle-item")) {
-                message += this.battle_use(pass);
-            }
-        } else {
-            if (this.types.includes("usable-item")) {
-                message += this.normal_use(pass);
-            }
-        }
-
-        message += "\n";
-        return message;
-    }
-
-    consume(user) {
-        if (!this.reusable) {
-            user.sub_item(this.id, 1);
-        }
-    }
-
-    normal_use([user]) {
-        let message = "";
-
-        message += Tools.parseReply(config.use_item, [user.name, this.name]);
-
-        if (this.subtype === "exp") {
-            message += this.gain_exp(user);
-        }
-
-        this.consume(user);
-        return message;
-    }
-
-    battle_use([battle, user, target = user]) {
-        let message = "";
-
-        message += Tools.parseReply(config.use_item, [user.name, this.name]);
-
-        if (this.subtype === "heal") {
-            message += this.heal(target);
-        }
-        if (this.subtype === "damage") {
-            message += this.apply_damage(battle, user,target);
-        }
-        if (this.subtype === "drain") {
-            message += this.apply_drain(battle, user,target);
-        }
-
-
-        this.consume(user);
-        return message;
-    }
-
-    static auto_select_target(battle,user) {
-        if (user.type === "player") {
-            return battle.enemy;
-        } else if (user.type === "enemy") {
-            return battle.player;
-        } else {
-            console.log("auto select target type error!");
-        }
-    }
-
-    heal(target) {
-        return target.heal(this.heal_full, this.restoreHP);
-    }
-
-    apply_damage(battle, user, target) {
-        let message = "";
-
-        if (user === target) {
-            target = Item.auto_select_target(battle, user);
-        }
-
-        this.dealt_damage = target.receive_damage(this.damage)[0];
-
-        if (target.type === "enemy") {
-            message += Tools.parseReply(config.item_damage_enemy, [target.name, this.dealt_damage, target.curHP])
-        } else if (target.type === "player") {
-            message += Tools.parseReply(config.item_damage_player, [target.name, this.dealt_damage, target.curHP])
-        } else {
-            console.log("apply damage type error!");
-        }
-        return message;
-    }
-
-    apply_drain(battle, user, target) {
-        let message = "";
-        if (user === target) {
-            target = Item.auto_select_target(battle, user);
-        }
-        message += this.apply_damage(battle,user,target);
-        this.restoreHP = Math.ceil(this.dealt_damage*this.conversion);
-        message += this.heal(user);
-        return message;
-    }
-
-    gain_exp(user) {
-        let ran = Tools.getRandomIntFromInterval(-this.range,this.range);
-        return user.gain_exp(this.experience + ran);
-    }
-
-}
-
-class Enemy {
-    constructor(load, data) {
-        if(load) {
-            this.name = data.name;
-            this.id = data.id;
-            this.type = data.type;
-            this.lv = data.lv;
-            this.maxHP = data.maxHP;
-            this.atk = data.atk;
-            this.atk_P = data.atk_P;
-            this.def = data.def;
-            this.ini = data.ini;
-
-            if (data.autolv) {
-                this.auto_leveler(data.autolv_data);
-            }
-
-            this.exp_gain = data.exp_gain;
-            this.cc_gain = data.cc_gain;
-
-            this.attack_patterns = data.attack_patterns;
-            this.curPattern = undefined;
-            this.curPatternMoveNum = 0;
-            this.charge_on = false;
-            this.charge_count = 0;
-
-            this.type = "enemy";
-            this.curHP = this.maxHP;
-        }
-    }
-
-    auto_leveler(auto) {
-        let mod = this.lv - 1;
-        this.maxHP += Math.floor(auto.hp * mod);
-        this.atk += Math.floor(auto.atk * mod);
-        this.atk_P += Math.floor(auto.atk_P * mod);
-        this.def += Math.floor(auto.def * mod);
-        this.ini += Math.floor(auto.ini * mod);
-    }
-
-    get_next_attack() {
-        if (this.curPatternMoveNum) {
-            let short = this.curPattern.shift();
-
-            if(short === "R" && !this.charge_on) {
-                this.charge_count = 0;
-                short = this.curPattern.shift();
-            }
-
-            this.curPatternMoveNum = this.curPattern.length;
-            return Battle_PvE.get_attack_from_char(short);
-
-        } else {
-            this.curPattern = this.attack_patterns[Math.floor(Math.random() * this.attack_patterns.length)].split("");
-            this.curPatternMoveNum = this.curPattern.length;
-            return this.get_next_attack();
-        }
-    }
-
-    receive_damage(dam) {
-        let net = dam - this.def;
-        if (net > 0) {
-            this.curHP = this.curHP - net;
-            return [net, this.curHP]
-        } else {
-            return [0, this.curHP]
-        }
-    }
-
-    defeated_message(player) {
-        let message = Tools.parseReply(config.enemy_defeat, [player.name, this.name]);
-        message += player.gain_exp(this.exp_gain);
-        message += player.gain_cc(this.cc_gain);
-        return message;
-    }
-
-    heal(full = false, amount = 0) {
-        let message = "";
-        if (full) {
-            this.curHP = this.maxHP;
-            message += Tools.parseReply(config.heal_enemy_full)
-        } else {
-            if (amount + this.curHP < this.maxHP) {
-                this.curHP += amount;
-                message += Tools.parseReply(config.heal_enemy_part, [amount, this.curHP])
-            } else {
-                this.curHP = this.maxHP;
-                message += Tools.parseReply(config.heal_enemy_complete, [this.curHP])
-            }
-        }
-        return message;
-    }
-
-}
-
-class Battle_PvE{
-    constructor(player, enemy) {
-        player.battle_on = true;
-        player.battle_id = player.id;
-
-        enemy.curHP = enemy.maxHP;
-        player.curHP = player.maxHP;
-
-        enemy.charge_on = false;
-        player.charge_on = false;
-        enemy.charge_count = 0;
-        player.charge_count = 0;
-        player.battle_item_on = false;
-        player.item_selector();
-
-        this.id = player.id;
-        this.player = player;
-        this.enemy = enemy;
-
-        this.type = "battle";
-
-        this.end_battle = false;
-    }
-
-    do_round(p_attack, num = 0) {
-        let first, second, p_init_mod, e_init_mod;
-
-        this.message = "";
-
-        this.update_attacks(p_attack);
-
-        p_init_mod = this.pre_order_modifiers(this.player);
-        e_init_mod = this.pre_order_modifiers(this.enemy);
-
-
-        [first,second] = this.battle_order(p_init_mod, e_init_mod);
-
-        this.attack_processor(first,second, num);
-        if (!this.defeat_check(first,second)) {
-            this.attack_processor(second,first, num);
-            this.defeat_check(second, first);
-        }
-
-        if (this.end_battle) {
-            this.player.curHP = this.player.maxHP;
-            this.player.battle_on = false;
-            this.player.battle_id = undefined;
-            this.player.battle = undefined;
-        }
-
-        return this.message;
-    }
-
-    update_attacks(p_attack) {
-        this.player.battle_attack = Battle_PvE.get_attack_from_char(p_attack);
-        this.enemy.battle_attack = this.enemy.get_next_attack();
-    }
-
-    pre_order_modifiers(entity) {
-        switch (entity.battle_attack) {
-            case "disrupt": {
-                return entity.lv;
-            }
-            case "brute": {
-                return -1 * entity.lv;
-            }
-            default : {
-                return 0;
-            }
-        }
-    };
-
-    attack_processor(attacker, defender, num) {
-
-        switch (attacker.battle_attack) {
-            case "strike":{
-                this.strike(attacker, defender);
-                break;
-            }
-            case "brute":{
-                this.brute(attacker, defender);
-                break;
-            }
-            case "charge":{
-                this.charge(attacker);
-                break;
-            }
-            case "release":{
-                this.release(attacker, defender);
-                break;
-            }
-            case "disrupt":{
-                this.disrupt(attacker, defender);
-                break;
-            }
-            case "item" : {
-                this.item_use(attacker, defender, num);
-                break;
-            }
-            default : {
-                console.log("battle no attack error! ("+attacker.battle_attack+")");
-            }
-        }
-    }
-
-    defeat_check(attacker, defender) {
-        let defeated = defender.curHP <= 0;
-        if (defeated) {
-            this.message += defender.defeated_message(attacker);
-            this.end_battle = true;
-        }
-        return defeated;
-    }
-
-
-
-    strike(attacker, defender) {
-        let dam, p, res;
-        switch (attacker.type) {
-            case "player": {
-                p = Tools.getRandomIntFromInterval(0, attacker.weapon.atk_P);
-                dam = attacker.atk + attacker.weapon.atk + p;
-                break;
-            }
-            case "enemy" : {
-                p = Tools.getRandomIntFromInterval(0, attacker.atk_P);
-                dam = attacker.atk + p;
-                break;
-            }
-            default : {
-                console.log("battle strike type error!");
-                dam = 0;
-            }
-        }
-
-        res = defender.receive_damage(dam);
-
-        this.strike_message(attacker, defender, res[0]);
-    }
-
-    brute(attacker, defender) {
-        let dam, p, res;
-        switch (attacker.type) {
-            case "player": {
-                p = Tools.getRandomIntFromInterval(0, attacker.weapon.atk_P);
-                dam = (2*attacker.atk+1) + attacker.weapon.atk + p;
-                break;
-            }
-            case "enemy" : {
-                p = Tools.getRandomIntFromInterval(0, attacker.atk_P);
-                dam = (2*attacker.atk+1) + p;
-                break;
-            }
-            default : {
-                console.log("battle brute type error!");
-                dam = 0;
-            }
-        }
-
-        res = defender.receive_damage(dam);
-
-        this.brute_message(attacker, defender, res[0]);
-    }
-
-    charge(attacker) {
-        if (attacker.charge_on) {
-            attacker.charge_count += 1;
-        } else {
-            attacker.charge_on = true;
-            attacker.charge_count = 1;
-        }
-
-        this.charge_message(attacker);
-    }
-
-    release(attacker, defender) {
-        let dam, p, res;
-
-        if (!attacker.charge_on) {
-            this.strike(attacker, defender);
-        } else {
-            dam = this.release_attack_damage(attacker);
-
-            res = defender.receive_damage(dam);
-
-            attacker.charge_on = false;
-            attacker.charge_count = 0;
-
-            this.release_message(attacker, defender, res[0]);
-        }
-    }
-
-    disrupt(attacker, defender) {
-        let dam, p, res;
-        switch (attacker.type) {
-            case "player": {
-                p = Tools.getRandomIntFromInterval(0, attacker.weapon.atk_P);
-                dam = (attacker.atk - attacker.lv) + attacker.weapon.atk + p;
-                break;
-            }
-            case "enemy" : {
-                p = Tools.getRandomIntFromInterval(0, attacker.atk_P);
-                dam = (attacker.atk - attacker.lv) + p;
-                break;
-            }
-            default : {
-                console.log("battle disrupt type error!");
-                dam = 0;
-            }
-        }
-
-        res = defender.receive_damage(dam);
-
-        this.disrupt_message(attacker, defender, res[0]);
-
-        if (defender.charge_on) {
-            dam = Math.floor(this.release_attack_damage(defender) / 2);
-            res = defender.receive_damage(dam);
-            defender.charge_on = false;
-            defender.charge_count = 0;
-
-            this.release_fail_message(defender, res[0]);
-        }
-
-
-    }
-
-    item_use(attacker, defender, num) {
-        this.message += attacker.battle_inventory[num].use([this, attacker]);
-    }
-
-
-    strike_message(attacker, defender, damage) {
-        switch (attacker.type) {
-            case "player": {
-                this.message += Tools.parseReply(config.player_strike_message, [attacker.name, defender.name, damage, defender.name, defender.curHP]);
-                break;
-            }
-            case "enemy" : {
-                this.message += Tools.parseReply(config.enemy_strike_message, [defender.name, attacker.name, damage, defender.name, defender.curHP]);
-                break;
-            }
-            default : {
-                console.log("battle strike message type error!");
-            }
-        }
-    }
-
-    brute_message(attacker, defender, damage) {
-        switch (attacker.type) {
-            case "player": {
-                this.message += Tools.parseReply(config.player_brute_message, [attacker.name, defender.name, damage, defender.name, defender.curHP]);
-                break;
-            }
-            case "enemy" : {
-                this.message += Tools.parseReply(config.enemy_brute_message, [defender.name, attacker.name, damage, defender.name, defender.curHP]);
-                break;
-            }
-            default : {
-                console.log("battle brute message type error!");
-            }
-        }
-    }
-
-    charge_message(attacker) {
-        switch (attacker.type) {
-            case "player": {
-                this.message += Tools.parseReply(config.player_charge_message, [attacker.name, attacker.charge_count]);
-                break;
-            }
-            case "enemy" : {
-                this.message += Tools.parseReply(config.enemy_charge_message, [attacker.name, attacker.charge_count]);
-                break;
-            }
-            default : {
-                console.log("battle charge message type error!");
-            }
-        }
-    }
-
-    release_message(attacker, defender, damage) {
-        switch (attacker.type) {
-            case "player": {
-                this.message += Tools.parseReply(config.player_release_message, [attacker.name, defender.name, damage, defender.name, defender.curHP]);
-                break;
-            }
-            case "enemy" : {
-                this.message += Tools.parseReply(config.enemy_release_message, [defender.name, attacker.name, damage, defender.name, defender.curHP]);
-                break;
-            }
-            default : {
-                console.log("battle release message type error!");
-            }
-        }
-    }
-
-    disrupt_message(attacker, defender, damage) {
-        switch (attacker.type) {
-            case "player": {
-                this.message += Tools.parseReply(config.player_disrupt_message, [attacker.name, defender.name, damage, defender.name, defender.curHP]);
-                break;
-            }
-            case "enemy" : {
-                this.message += Tools.parseReply(config.enemy_disrupt_message, [defender.name, attacker.name, damage, defender.name, defender.curHP]);
-                break;
-            }
-            default : {
-                console.log("battle disrupt message type error!");
-            }
-        }
-    }
-
-    release_fail_message(defender, damage) {
-        switch (defender.type) {
-            case "player": {
-                this.message += Tools.parseReply(config.player_release_fail_message, [damage, defender.name, defender.curHP]);
-                break;
-            }
-            case "enemy" : {
-                this.message += Tools.parseReply(config.enemy_release_fail_message, [defender.name, damage, defender.name, defender.curHP]);
-                break;
-            }
-            default : {
-                console.log("battle release_fail message type error!");
-            }
-        }
-    }
-
-    release_attack_damage(attacker) {
-        let dam, p;
-        dam = 0;
-        switch (attacker.type) {
-            case "player": {
-                let i;
-                for (i = 0; i <= attacker.charge_count; i++) {
-                    p = Tools.getRandomIntFromInterval(0, attacker.weapon.atk_P);
-                    dam += attacker.atk + attacker.weapon.atk + p + attacker.lv;
-                }
-                break;
-            }
-            case "enemy" : {
-                let i;
-                for (i = 0; i <= attacker.charge_count; i++) {
-                    p = Tools.getRandomIntFromInterval(0, attacker.atk_P);
-                    dam += attacker.atk + p + attacker.lv;
-                }
-                break;
-            }
-            default : {
-                console.log("battle release type error!");
-                dam = 0;
-            }
-        }
-        return dam;
-    }
-
-    battle_order(p_mod = 0, e_mod = 0) {
-
-        if (this.player.battle_attack === "item" && this.enemy.battle_attack !== "item") {
-            return [this.player,this.enemy];
-        } else if (this.player.battle_attack !== "item" && this.enemy.battle_attack === "item") {
-            return [this.enemy,this.player];
-        }
-        if ((this.player.ini + p_mod) > (this.enemy.ini + e_mod)) {
-            return [this.player, this.enemy];
-        } else if ((this.player.ini + p_mod) < (this.enemy.ini + e_mod)) {
-            return [this.enemy, this.player]
-        } else if ((this.player.ini + p_mod) === (this.enemy.ini + e_mod)) {
-            let ran = Tools.getRandomIntFromInterval(0,1);
-            if (ran) {
-                return [this.player, this.enemy];
-            } else {
-                return [this.enemy, this.player]
-            }
-        }
-        console.log("battle order error!");
-    }
-
-    static get_attack_from_char(char) {
-        switch (char) {
-            case "S" : {
-                return "strike";
-            }
-            case "B" : {
-                return "brute";
-            }
-            case "C" : {
-                return "charge";
-            }
-            case "R" : {
-                return "release";
-            }
-            case "D" : {
-                return "disrupt";
-            }
-            case "I" : {
-                return "item";
-            }
-            default: {
-                console.log("battle char match error!");
-            }
-        }
-    }
-}

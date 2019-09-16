@@ -6,7 +6,7 @@ const Module = require("../../lib/Module");
 const Promise = require("bluebird");
 const Tools = require("../../lib/Tools");
 const AntiVirus = require("./submodule/AntiVirus/antiVirus");
-var active_AV = false;
+var active_AV = {};
 
 module.exports = class RockPaperScissors extends Module {
     start() {
@@ -19,6 +19,9 @@ module.exports = class RockPaperScissors extends Module {
                 if (msg.author.bot) {
                     return;
                 }
+
+                //console.log(msg.channel.type);
+                //console.log(msg.author.dmChannel.id);
 
                 if (Application.modules.Discord.isUserBlocked(msg.author.id)) {
                     return;
@@ -41,7 +44,7 @@ module.exports = class RockPaperScissors extends Module {
                     }
                 }
 
-                if (active_AV) {
+                if (this.antivirus_check(msg)) {
                     if (Tools.msg_starts(msg,"-"))
                     {
                         return AntiVirus.input(msg, msg.content.substring(1))
@@ -187,23 +190,45 @@ module.exports = class RockPaperScissors extends Module {
     }
 
     start_antivirus(msg) {
-        if (active_AV) {
+        if (this.antivirus_check(msg)) {
             msg.channel.send(Tools.parseReply(this.config.ans_AV_active));
         } else {
-            active_AV = true;
+            this.activate_antivirus(msg);
             msg.channel.send(Tools.parseReply(this.config.ans_activate_AV));
         }
         Application.modules.Discord.setMessageSent();
     }
 
     stop_antivirus(msg) {
-        if (active_AV) {
-            active_AV = false;
+        if (this.antivirus_check(msg)) {
+            this.deactivate_antivirus(msg);
             msg.channel.send(Tools.parseReply(this.config.ans_deactivate_AV));
         } else {
             msg.channel.send(Tools.parseReply(this.config.ans_AV_inactive));
         }
         Application.modules.Discord.setMessageSent();
+    }
+
+    activate_antivirus(msg) {
+        if (msg.channel.type === "text") {
+            console.log("text");
+            active_AV[msg.channel.id] = true;
+        }
+
+        active_AV[msg.author.id] = true;
+    }
+
+    deactivate_antivirus(msg) {
+        if (msg.channel.type === "text") {
+            active_AV[msg.channel.id] = false;
+            active_AV[msg.author.id] = false;
+        } else if (msg.channel.type === "dm") {
+            active_AV[msg.author.id] = false;
+        }
+    }
+
+    antivirus_check(msg) {
+        return (active_AV[msg.channel.id] || (active_AV[msg.author.id] && msg.channel.type === "dm"));
     }
 
     stop() {
