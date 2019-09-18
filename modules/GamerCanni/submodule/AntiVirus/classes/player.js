@@ -7,6 +7,7 @@ const Weapon = require('./weapon');
 const Item = require('./item');
 const Enemy = require('./enemy');
 const Battle_PvE = require('./battle_pve');
+const Shop = require('./shop');
 
 
 module.exports = class Player {
@@ -24,6 +25,7 @@ module.exports = class Player {
             this.experiance = data.experiance;
             this.cc = data.cc;
             this.loadInventory(data.inventory);
+            this.loadWeapon_Inventory(data.weapon_inventory)
         } else {
             this.lv = 1;
             this.atk = 1;
@@ -36,6 +38,7 @@ module.exports = class Player {
             this.experiance = 0;
             this.cc = 0;
             this.inventory = [];
+            this.weapon_inventory = [this.weapon];
             this.battle_inventory = [];
         }
         this.curHP = this.maxHP;
@@ -52,8 +55,25 @@ module.exports = class Player {
         this.maxHP_increase = 5;
 
         this.inventory_on = false;
+        this.shop_select_on = false;
+        this.shop_on = false;
+        this.shop_category = "n";
+        this.curShop = undefined;
 
+
+        this.get_shops();
         this.item_selector();
+    }
+
+    get_shops() {
+        let pre = [];
+        AV.shops.forEach(shop => {
+           if (this.lv >= shop.lv)  {
+               pre.push(new Shop(false, shop));
+           }
+        });
+        this.shops = pre;
+        this.shop_selector();
     }
 
     loadInventory(data) {
@@ -68,6 +88,15 @@ module.exports = class Player {
         });
         this.inventory = inventory;
         this.battle_inventory = battle_inventory;
+    }
+
+    loadWeapon_Inventory(data) {
+        let w_inventory = [];
+        data.forEach(weapon => {
+            let w = new Weapon(true, weapon);
+            w_inventory.push(w);
+        });
+        this.weapon_inventory = w_inventory;
     }
 
     stats() {
@@ -120,6 +149,7 @@ module.exports = class Player {
             this.do_levelup();
             message += Tools.parseReply(AV.config.levelup, [this.name, this.lv, this.experiance, this.levelup_function()]);
             message += this.check_levelup();
+            this.get_shops();
             return message;
         }
         else {
@@ -187,11 +217,38 @@ module.exports = class Player {
         this.selector_battle = sel_bat;
     }
 
+    shop_selector() {
+        let sel = "";
+        let count = 1;
+
+        if (this.shops.length <= 0) {
+            sel += Tools.parseReply(AV.config.selector_no_shops, [this.name]);
+            this.shops_count = count - 1;
+        } else {
+            this.shops.forEach(shop => {
+                sel += Tools.parseReply(AV.config.selector_pattern_shop, [count, shop.name]);
+                count += 1;
+            });
+            this.shops_count = count - 1;
+        }
+        this.selector_shop = sel;
+    }
+
     inventory_get_item(id) {
         let obj = undefined;
         this.inventory.forEach(item => {
             if (item.id === parseInt(id)) {
                 obj = item;
+            }
+        });
+        return obj;
+    }
+
+    inventory_get_weapon(id) {
+        let obj = undefined;
+        this.weapon_inventory.forEach(weapon => {
+            if (weapon.id === parseInt(id)) {
+                obj = weapon;
             }
         });
         return obj;
@@ -230,5 +287,24 @@ module.exports = class Player {
             }
         }
         this.item_selector();
+    }
+
+    add_weapon(id) {
+        if (!this.inventory_get_weapon(id)) {
+            let weapon = Weapon.get_weapon_by_id(id);
+            if (weapon) {
+                this.weapon_inventory.push(new Weapon(false, weapon));
+            }
+        }
+    }
+
+    sub_weapon(id) {
+        let weapon = this.inventory_get_weapon(id);
+        if (weapon) {
+            let index = this.weapon_inventory.indexOf(item);
+            if (index > -1) {
+                this.weapon_inventory.splice(index, 1);
+            }
+        }
     }
 };

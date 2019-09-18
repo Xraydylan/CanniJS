@@ -10,7 +10,9 @@ const Weapon = require('./classes/weapon');
 const Item = require('./classes/item');
 const Enemy = require('./classes/enemy');
 const Battle_PvE = require('./classes/battle_pve');
+const Shop = require('./classes/shop');
 const AV = require('./antiVirus');
+
 
 AV.av_path;
 AV.config;
@@ -22,13 +24,14 @@ AV.virus = [];
 AV.worm = [];
 AV.trojan =  [];
 AV.items = [];
+AV.shops = [];
 
 AV.signup_on = {};
 AV.signup_state = {};
 AV.signup_name = {};
 
 AV.debug_on = false;
-AV.dev = false;
+AV.dev = true;
 
 
 //Debug "Application.modules.Discord.setMessageSent();" not yet implemented.
@@ -53,6 +56,7 @@ module.exports = class AntiVirus {
 
         if (this.check_player(msg)) {
             let p = this.get_player_by_id(msg.author.id);
+
             if (p.battle_on) {
                 return this.battle_manager(msg, input, p)
             } else if (p.stat_select_on) {
@@ -63,7 +67,8 @@ module.exports = class AntiVirus {
                 } else {
                     p.inventory_on = false;
                 }
-
+            } else if (p.shop_on) {
+                return this.shop_manager(msg, input, p);
             }
 
             if (AV.dev) {
@@ -79,6 +84,8 @@ module.exports = class AntiVirus {
                 this.point_start(msg,p)
             } else if(this.input_is_list(input,["inventory", "inv"])) {
                 this.inventory_start(msg,p)
+            } else if(this.input_is_list(input,["shop", "sh"])) {
+                this.shop_start(msg,p)
             }
 
 
@@ -87,6 +94,7 @@ module.exports = class AntiVirus {
             }
         } else {
             if (this.input_is(input,"create new avs")) {
+
                 this.signup_start(msg);
             } else {
                 this.sender(msg,AV.config.DM_create_player_request);
@@ -99,8 +107,9 @@ module.exports = class AntiVirus {
         this.loadConfig();
         this.loadWeapons();
         this.loadItems();
-        this.loadPlayerData();
         this.loadEnemies();
+        this.loadShops();
+        this.loadPlayerData();
 
     }
 
@@ -196,6 +205,23 @@ module.exports = class AntiVirus {
         }
     }
 
+    static loadShops() {
+        let path = AV.av_path + "/data/shops.json";
+        let data, tmp;
+        try {
+            data = Tools.loadCommentedConfigFile(path);
+        } catch (e) {
+            throw new Error("config of module ... contains invalid json data: " + e.toString());
+        }
+
+        if (data) {
+            data.shops.forEach(shop => {
+                tmp = new Shop(true, shop);
+                AV.shops.push(tmp);
+            });
+        }
+    }
+
     static save_players() {
         let path = AV.av_path + "/data/data.json";
         let save;
@@ -212,7 +238,7 @@ module.exports = class AntiVirus {
     static check_player(msg) {
         let cond = false;
         AV.player_data.forEach(player => {
-            if (player.id === msg.author.id) {
+            if (player.id.toString() === msg.author.id.toString()) {
                 cond = true;
             }
         });
@@ -222,7 +248,7 @@ module.exports = class AntiVirus {
     static get_player_by_id(id) {
         let player;
         AV.player_data.forEach(p => {
-            if (p.id === parseInt(id)) {
+            if (p.id.toString() === id.toString()) {
                 player = p;
             }
         });
@@ -435,6 +461,7 @@ module.exports = class AntiVirus {
         this.senderDM(msg, message);
     }
 
+
     static inventory_start(msg, p) {
         let message = "";
         if (p.items_count === 0) {
@@ -483,6 +510,167 @@ module.exports = class AntiVirus {
         }
         if (this.input_is_list(input, ["back","b"])) {
             p.inventory_on = false;
+        }
+    }
+
+    static shop_start(msg,p) {
+        let message = "";
+        if (p.shops_count === 0) {
+            message += p.selector_shop;
+        } else {
+            p.shop_select_on = true;
+            p.shop_on = true;
+            message += Tools.parseReply(AV.config.startshop);
+            message += p.selector_shop;
+        }
+        this.senderDM(msg, message);
+    }
+
+    static shop_manager(msg, input, p) {
+        let pre, num, shop, item, amount, weapon;
+        let message = "";
+        if (p.shop_select_on) {
+            pre = input.split(" ");
+            num = parseInt(pre[0]);
+            if (num) {
+                if (num <= p.shops.length) {
+                    p.curShop = p.shops[num-1];
+                    message += Tools.parseReply(p.curShop.info_on_enter, [p.name]);
+                    message += Tools.parseReply(AV.config.shop_cc, [p.cc]);
+                    message += Tools.parseReply(AV.config.select_shop_category);
+                    message += p.curShop.selector_category;
+                    p.shop_category = "n";
+                    p.shop_select_on = false;
+                    this.senderDM(msg, message);
+                }
+            } else if (this.input_is_list(input, ["back","b", "exit", "e"])) {
+                p.shop_select_on = false;
+                p.shop_on = false;
+            }
+        } else {
+            if (p.shop_category === "n") {
+                pre = input.split(" ");
+                num = parseInt(pre[0]);
+                if (num <= p.curShop.category_count) {
+                    p.shop_category = p.curShop.categories[num - 1].type;
+                    message += Tools.parseReply(p.curShop.category_message(p.shop_category));
+                    this.senderDM(msg, message);
+                } else if (this.input_is_list(input, ["back","b", "exit", "e"])) {
+                    p.shop_select_on = true;
+                    message += Tools.parseReply(AV.config.startshop);
+                    message += p.selector_shop;
+                    this.senderDM(msg, message);
+                } else if (this.input_is_list(input, ["exit", "e"])) {
+                    p.shop_select_on = false;
+                    p.shop_on = false;
+                }
+            } else if (p.shop_category === "i") {
+                if (this.input_starts_word_list(input,["info", "i"])) {
+                    pre = input.split(" ");
+                    if (pre.length >= 2) {
+                        num = parseInt(pre[1]);
+                        if (num) {
+                            if (num <= p.curShop.shopitems.length) {
+                                message += p.curShop.shopitems[num - 1].info;
+                                this.senderDM(msg, message);
+                            }
+                        }
+                    }
+                }
+
+                if (this.input_starts_word_list(input,["buy", "bu"])) {
+                    pre = input.split(" ");
+                    if (pre.length >= 2) {
+                        num = parseInt(pre[1]);
+                        if (num) {
+                            if (num <= p.curShop.shopitems.length) {
+                                item = p.curShop.shopitems[num - 1];
+                                if (p.cc >= item.value) {
+                                    p.cc -= item.value;
+                                    p.add_item(item.id);
+                                    amount = p.inventory_get_item(item.id).number;
+                                    message += Tools.parseReply(AV.config.shop_bought_item,[item.name, amount])
+                                } else {
+                                    message += Tools.parseReply(AV.config.shop_no_enough_cc_item,[item.name])
+                                }
+                                this.senderDM(msg, message);
+                            }
+                        }
+                    }
+                }
+
+                if (this.input_is_list(input,["back", "b"])) {
+                    message += Tools.parseReply(AV.config.select_shop_category);
+                    message += p.curShop.selector_category;
+                    p.shop_category = "n";
+                    p.shop_select_on = false;
+                    this.senderDM(msg, message);
+                }
+
+                if (this.input_is_list(input,["exit", "e"])) {
+                    message += Tools.parseReply(AV.config.shop_exit, [p.curShop.name]);
+                    p.shop_select_on = false;
+                    p.shop_on = false;
+                    p.shop_category = "n";
+                    p.curShop = undefined;
+                    this.senderDM(msg, message);
+                }
+
+            } else if (p.shop_category === "w") {
+                if (this.input_starts_word_list(input,["info", "i"])) {
+                    pre = input.split(" ");
+                    if (pre.length >= 2) {
+                        num = parseInt(pre[1]);
+                        if (num) {
+                            if (num <= p.curShop.shopweapons.length) {
+                                message += p.curShop.shopweapons[num - 1].info;
+                                this.senderDM(msg, message);
+                            }
+                        }
+                    }
+                }
+
+                if (this.input_starts_word_list(input,["buy", "bu"])) {
+                    pre = input.split(" ");
+                    if (pre.length >= 2) {
+                        num = parseInt(pre[1]);
+                        if (num) {
+                            if (num <= p.curShop.shopweapons.length) {
+                                weapon = p.curShop.shopweapons[num - 1];
+                                if (!p.inventory_get_weapon(weapon.id)) {
+                                    if (p.cc >= weapon.value) {
+                                        p.cc -= weapon.value;
+                                        p.add_weapon(weapon.id);
+                                        message += Tools.parseReply(AV.config.shop_bought_weapon,[weapon.name]);
+                                    } else {
+                                        message += Tools.parseReply(AV.config.shop_no_enough_cc_item,[weapon.name]);
+                                    }
+                                } else {
+                                    message += Tools.parseReply(AV.config.shop_weapon_in_possession,[weapon.name])
+                                }
+                                this.senderDM(msg, message);
+                            }
+                        }
+                    }
+                }
+
+                if (this.input_is_list(input,["back", "b"])) {
+                    message += Tools.parseReply(AV.config.select_shop_category);
+                    message += p.curShop.selector_category;
+                    p.shop_category = "n";
+                    p.shop_select_on = false;
+                    this.senderDM(msg, message);
+                }
+
+                if (this.input_is_list(input,["exit", "e"])) {
+                    message += Tools.parseReply(AV.config.shop_exit, [p.curShop.name]);
+                    p.shop_select_on = false;
+                    p.shop_on = false;
+                    p.shop_category = "n";
+                    p.curShop = undefined;
+                    this.senderDM(msg, message);
+                }
+            }
         }
     }
 

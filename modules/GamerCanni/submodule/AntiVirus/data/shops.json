@@ -1,0 +1,38 @@
+{
+  "shops": [
+    { "name": "Cannis Item Stand",
+      "id": 1,
+      "lv": 0,
+      "items": [1,2,3,4],
+      "weapons": [1,2,3],
+      "info_on_enter": "%s, you entered Cannis Item Stand.\n",
+      "categories": [
+        {
+        "name": "Items",
+        "type": "i"
+      },
+        {
+          "name": "Weapons",
+          "type": "w"
+      }
+      ]
+    },
+    { "name": "Small Canni Shop",
+      "id": 2,
+      "lv": 2,
+      "items": [5,6,7,8],
+      "weapons": [1,2,3],
+      "info_on_enter": "%s, you entered Small Canni Shop.\n",
+      "categories": [
+        {
+          "name": "Items",
+          "type": "i"
+        },
+        {
+          "name": "Weapons",
+          "type": "w"
+        }
+      ]
+    }
+  ]
+}

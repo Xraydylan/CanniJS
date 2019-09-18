@@ -20,9 +20,6 @@ module.exports = class RockPaperScissors extends Module {
                     return;
                 }
 
-                //console.log(msg.channel.type);
-                //console.log(msg.author.dmChannel.id);
-
                 if (Application.modules.Discord.isUserBlocked(msg.author.id)) {
                     return;
                 }
@@ -211,7 +208,6 @@ module.exports = class RockPaperScissors extends Module {
 
     activate_antivirus(msg) {
         if (msg.channel.type === "text") {
-            console.log("text");
             active_AV[msg.channel.id] = true;
         }
 
@@ -228,6 +224,11 @@ module.exports = class RockPaperScissors extends Module {
     }
 
     antivirus_check(msg) {
+        if (active_AV[msg.channel.id]) {
+            if (Tools.msg_contains(msg, "create new avs")) {
+                active_AV[msg.author.id] = true;
+            }
+        }
         return (active_AV[msg.channel.id] || (active_AV[msg.author.id] && msg.channel.type === "dm"));
     }
 

@@ -1,8 +1,8 @@
 {
   "items" : [
-    {"name": "Small Bit Refresh",
+    {"name": "Tiny Bit Refresh",
       "id": 1,
-      "value": 5,
+      "value": 2,
       "types": ["battle-item"],
       "subtype": "heal",
       "restoreHP": 5,
@@ -12,9 +12,9 @@
 
       "number": 1
     },
-    {"name": "Small Data-Bomb",
+    {"name": "Tiny Data-Bomb",
       "id": 2,
-      "value": 5,
+      "value": 3,
       "types": ["battle-item"],
       "subtype": "damage",
       "damage": 5,
@@ -23,9 +23,9 @@
 
       "number": 1
     },
-    {"name": "Small Data-Drain",
+    {"name": "Tiny Data-Drain",
       "id": 3,
-      "value": 7,
+      "value": 5,
       "types": ["battle-item"],
       "subtype": "drain",
       "damage": 5,
@@ -35,13 +35,61 @@
 
       "number": 1
     },
-    {"name": "Small Data-Fragment",
+    {"name": "Tiny Data-Fragment",
       "id": 4,
-      "value": 10,
+      "value": 7,
       "types": ["usable-item"],
       "subtype": "exp",
       "experience": 5,
       "range": 2,
+      "reusable": false,
+      "info": "%s contains knowledge and grants you up to %s exp.\n\n",
+
+      "number": 1
+    },
+
+    {"name": "Small Bit Refresh",
+      "id": 5,
+      "value": 5,
+      "types": ["battle-item"],
+      "subtype": "heal",
+      "restoreHP": 10,
+      "heal_full": false,
+      "reusable": false,
+      "info": "%s restores up to %s lost HP.\n\n",
+
+      "number": 1
+    },
+    {"name": "Small Data-Bomb",
+      "id": 6,
+      "value": 7,
+      "types": ["battle-item"],
+      "subtype": "damage",
+      "damage": 10,
+      "reusable": false,
+      "info": "%s causes up to %s damage to an enemy.\n\n",
+
+      "number": 1
+    },
+    {"name": "Small Data-Drain",
+      "id": 7,
+      "value": 9,
+      "types": ["battle-item"],
+      "subtype": "drain",
+      "damage": 10,
+      "conversion": 0.5,
+      "reusable": false,
+      "info": "%s drains HP form an enemy and adds %s of the caused damage to your HP.\n\n",
+
+      "number": 1
+    },
+    {"name": "Small Data-Fragment",
+      "id": 8,
+      "value": 12,
+      "types": ["usable-item"],
+      "subtype": "exp",
+      "experience": 8,
+      "range": 3,
       "reusable": false,
       "info": "%s contains knowledge and grants you up to %s exp.\n\n",
 
