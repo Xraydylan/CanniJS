@@ -411,4 +411,38 @@ module.exports = class Battle_PvE{
             }
         }
     }
+
+    data() {
+        let message = "";
+
+        message += Tools.parseReply(AV.config.battle_data, [this.player.name, this.enemy.name]);
+        message += this.data_stats();
+
+
+        return message;
+    }
+
+    data_stats() {
+        let message = "";
+        message += this.data_stats_generate("Level", this.player.lv, this.enemy.lv);
+        message += this.data_stats_generate("Initiative", this.player.ini, this.enemy.ini);
+        message += this.data_stats_generate("Direct Attack", this.player.atk + this.player.weapon.atk, this.enemy.atk);
+        message += this.data_stats_generate("Hit Attack", this.player.weapon.atk_P, this.enemy.atk_P);
+        message += this.data_stats_generate("Defense", this.player.def, this.enemy.def);
+
+        return message;
+    }
+
+    data_stats_generate(type, p_dat, e_dat) {
+        let separator = "";
+        if (e_dat > p_dat) {
+            separator = ">";
+        } else if (e_dat < p_dat) {
+            separator = "<";
+        } else {
+            separator = "=";
+        }
+
+        return Tools.parseReply(AV.config.battle_data_pattern, [type, e_dat, separator, p_dat]);
+    }
 };

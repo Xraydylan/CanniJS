@@ -21,7 +21,7 @@ module.exports = class Player {
             this.ini = data.ini;
             this.maxHP = data.maxHP;
             this.state = data.state;
-            this.weapon = new Weapon(true,data.weapon);
+            this.weapon = new Weapon(true, data.weapon);
             this.experiance = data.experiance;
             this.cc = data.cc;
             this.loadInventory(data.inventory);
@@ -34,7 +34,7 @@ module.exports = class Player {
             this.maxHP = 10;
             this.state = "alive";
             let random = Tools.getRandomIntFromInterval(0, AV.starter_weapons.length - 1);
-            this.weapon = AV.starter_weapons[random];
+            this.weapon = new Weapon(false, AV.starter_weapons[random]);
             this.experiance = 0;
             this.cc = 0;
             this.inventory = [];
@@ -59,10 +59,12 @@ module.exports = class Player {
         this.shop_on = false;
         this.shop_category = "n";
         this.curShop = undefined;
+        this.equip_on = false;
 
 
         this.get_shops();
         this.item_selector();
+        this.weapon_selector();
     }
 
     get_shops() {
@@ -74,6 +76,10 @@ module.exports = class Player {
         });
         this.shops = pre;
         this.shop_selector();
+    }
+
+    get_exp_ration() {
+        return Math.floor(100 * (this.experiance/this.levelup_function()));
     }
 
     loadInventory(data) {
@@ -91,9 +97,14 @@ module.exports = class Player {
     }
 
     loadWeapon_Inventory(data) {
+        let w;
         let w_inventory = [];
         data.forEach(weapon => {
-            let w = new Weapon(true, weapon);
+            if (weapon.id === this.weapon.id) {
+                w = this.weapon;
+            } else {
+                w = new Weapon(true, weapon);
+            }
             w_inventory.push(w);
         });
         this.weapon_inventory = w_inventory;
@@ -234,6 +245,29 @@ module.exports = class Player {
         this.selector_shop = sel;
     }
 
+    weapon_selector() {
+        let sel = "";
+        let count = 1;
+        let equipped = "";
+
+        if (this.weapon_inventory.length <= 0) {
+            sel += Tools.parseReply(AV.config.selector_no_weapons, [this.name]);
+            this.weapon_count = count - 1;
+        } else {
+            this.weapon_inventory.forEach(weapon => {
+                if (this.weapon === weapon) {
+                    equipped = "  <--  Equipped";
+                } else {
+                    equipped = "";
+                }
+                sel += Tools.parseReply(AV.config.selector_pattern_weapons, [count, weapon.name, equipped]);
+                count += 1;
+            });
+            this.weapon_count = count - 1;
+        }
+        this.selector_weapon = sel;
+    }
+
     inventory_get_item(id) {
         let obj = undefined;
         this.inventory.forEach(item => {
@@ -294,6 +328,7 @@ module.exports = class Player {
             let weapon = Weapon.get_weapon_by_id(id);
             if (weapon) {
                 this.weapon_inventory.push(new Weapon(false, weapon));
+                this.weapon_selector();
             }
         }
     }
@@ -305,6 +340,7 @@ module.exports = class Player {
             if (index > -1) {
                 this.weapon_inventory.splice(index, 1);
             }
+            this.weapon_selector();
         }
     }
 };

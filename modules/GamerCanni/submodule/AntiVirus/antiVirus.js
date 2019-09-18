@@ -11,6 +11,7 @@ const Item = require('./classes/item');
 const Enemy = require('./classes/enemy');
 const Battle_PvE = require('./classes/battle_pve');
 const Shop = require('./classes/shop');
+const Spawn = require('./classes/spawn');
 const AV = require('./antiVirus');
 
 
@@ -29,6 +30,8 @@ AV.shops = [];
 AV.signup_on = {};
 AV.signup_state = {};
 AV.signup_name = {};
+
+AV.spawn;
 
 AV.debug_on = false;
 AV.dev = true;
@@ -69,6 +72,8 @@ module.exports = class AntiVirus {
                 }
             } else if (p.shop_on) {
                 return this.shop_manager(msg, input, p);
+            } else if (p.equip_on) {
+                return this.equip_manager(msg, input, p);
             }
 
             if (AV.dev) {
@@ -79,13 +84,17 @@ module.exports = class AntiVirus {
             if(this.input_is_list(input,["stats","st"])) {
                 this.displayStats(msg, p);
             } else if(this.input_is_list(input,["info", "i"])) {
-                this.displayInfo(msg, p)
+                this.displayInfo(msg, p);
             } else if(this.input_is_list(input,["use points", "up"])) {
-                this.point_start(msg,p)
+                this.point_start(msg,p);
             } else if(this.input_is_list(input,["inventory", "inv"])) {
-                this.inventory_start(msg,p)
+                this.inventory_start(msg,p);
             } else if(this.input_is_list(input,["shop", "sh"])) {
-                this.shop_start(msg,p)
+                this.shop_start(msg,p);
+            } else if(this.input_is_list(input,["weapons", "w", "equipment", "equip", "eq"])) {
+                this.equip_start(msg,p);
+            } else if (this.input_is_list(input,["scan","s"])) {
+                this.scan_for_enemy(msg,p);
             }
 
 
@@ -110,7 +119,7 @@ module.exports = class AntiVirus {
         this.loadEnemies();
         this.loadShops();
         this.loadPlayerData();
-
+        this.loadSpawn()
     }
 
     static loadWeapons() {
@@ -220,6 +229,10 @@ module.exports = class AntiVirus {
                 AV.shops.push(tmp);
             });
         }
+    }
+
+    static loadSpawn() {
+        AV.spawn = new Spawn();
     }
 
     static save_players() {
@@ -348,6 +361,13 @@ module.exports = class AntiVirus {
 
 
 
+    static scan_for_enemy(msg,p) {
+        let message, enemy;
+        [message, enemy] = AV.spawn.spawn(msg,p);
+        p.battle = new Battle_PvE(p, enemy);
+        this.sender(msg, Tools.parseReply(message));
+    }
+
     static battle_start(msg, p) {
         let mon = new Enemy(true, AV.virus[0]);
         p.battle = new Battle_PvE(p, mon);
@@ -376,6 +396,8 @@ module.exports = class AntiVirus {
                 this.sender(msg, battle.do_round("D"));
             } else if (this.input_is_list(input, ["item","i"])) {
                 this.battle_item_use_start(msg, battle, p);
+            } else if (this.input_is_list(input, ["data","d"])) {
+                this.sender(msg, battle.data());
             }
         }
     }
@@ -512,6 +534,7 @@ module.exports = class AntiVirus {
             p.inventory_on = false;
         }
     }
+
 
     static shop_start(msg,p) {
         let message = "";
@@ -671,6 +694,60 @@ module.exports = class AntiVirus {
                     this.senderDM(msg, message);
                 }
             }
+        }
+    }
+
+
+    static equip_start(msg,p) {
+        let message = "";
+        p.weapon_selector();
+        if (p.weapon_count === 0) {
+            message += p.selector_weapon;
+        } else {
+            p.equip_on = true;
+            message += Tools.parseReply(AV.config.startequip);
+            message += p.selector_weapon;
+        }
+        this.senderDM(msg, message);
+    }
+
+    static equip_manager(msg, input, p) {
+        let pre, num, weapon;
+        let message = "";
+        if (this.input_starts_word_list(input,["info", "i"])) {
+            pre = input.split(" ");
+            if (pre.length >= 2) {
+                num = parseInt(pre[1]);
+                if (num) {
+                    if (num <= p.weapon_inventory.length) {
+                        message += p.weapon_inventory[num - 1].info;
+                        this.senderDM(msg, message);
+                    }
+                }
+            }
+        }
+        if (this.input_starts_word_list(input,["use", "u", "equip", "eq"])) {
+            pre = input.split(" ");
+            if (pre.length >= 2) {
+                num = parseInt(pre[1]);
+                if (num) {
+                    if (num <= p.weapon_inventory.length) {
+                        weapon = p.weapon_inventory[num - 1];
+                        if (weapon.id === p.weapon.id) {
+                            message += Tools.parseReply(AV.config.weapon_already_equipped, [weapon.name]);
+                        } else {
+                            p.weapon = weapon;
+                            p.weapon_selector();
+                            message += Tools.parseReply(AV.config.startequip);
+                            message += p.selector_weapon;
+                        }
+                        this.senderDM(msg, message);
+                    }
+                }
+            }
+        }
+        if (this.input_is_list(input, ["back","b"])) {
+            p.equip_on = false;
         }
     }
 

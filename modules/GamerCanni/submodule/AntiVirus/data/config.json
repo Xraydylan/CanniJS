@@ -9,7 +9,7 @@
 
   "displayStats": "AVS (AntiVirusSystem) Account:\nName: %s\nLevel: %s\nExp: %s/%s\nCanni Coins: %s\n\nHP: %s\nAttack: %s\nDefense: %s\nInitiative: %s\n\nWeapon: %s\nLevel: %s\nDirect Damage: %s\nHit Damage: %s",
 
-  "startcombat": "Start combat. Encounter.\nYour Enemy is: %s\nFirst Round.\n(strike, brute force, charge, disrupt, item)",
+  "startcombat": "Start combat. Encounter.\nYour Enemy is: %s\nFirst Round.\n(strike, brute force, charge, disrupt, item, data)",
   "battle_choose_move": "%s, Choose a move.\n(strike, brute force, charge, disrupt, item)",
 
   "player_strike_message": "%s, you hit %s with a strike attack and caused %s damage.\n%s now has %s HP.\n",
@@ -30,6 +30,8 @@
   "player_release_fail_message": "You were hit while you were charging. The accumulated charge exploded and caused %s damage.\n%s now has %s HP.\n",
   "enemy_release_fail_message": "You hit %s while it was charging. The accumulated charge exploded and caused %s damage.\n%s now has %s HP.\n",
 
+  "battle_data" : "%s, you are currently fighting %s.\nHere are your stats in comparison (Enemy|Player):\n\n",
+  "battle_data_pattern" : "%s:\n%s   %s   %s\n",
 
 
   "player_defeat" : "\n%s your HP dropped to 0. You can not continue fighting.\n",
@@ -91,5 +93,11 @@
   "shop_bought_item": "You successfully bought %s. Now you have it %sx in your inventory.\n",
   "shop_bought_weapon": "You successfully bought %s.\n",
   "shop_weapon_in_possession": "You already have %s. You can´t buy it again.",
-  "shop_exit": "You exited the %s."
+  "shop_exit": "You exited the %s.",
+
+  "selector_no_weapons": "%s, you currently don´t have any Weapons...\n",
+  "selector_pattern_weapons" : "%s:  %s%s\n",
+  "startequip": "Here are all weapons you have:\n",
+  "weapon_already_equipped": "You have already equipped %s.\n"
+
 }
