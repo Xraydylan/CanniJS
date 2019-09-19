@@ -5,8 +5,6 @@ const fs = require('fs');
 const AV = require('../antiVirus');
 const Player = require('./player');
 const Weapon = require('./weapon');
-const Enemy = require('./enemy');
-const Battle_PvE = require('./battle_pve');
 
 module.exports = class Item {
     constructor(load, data) {

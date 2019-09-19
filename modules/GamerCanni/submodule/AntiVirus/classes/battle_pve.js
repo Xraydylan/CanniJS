@@ -190,7 +190,7 @@ module.exports = class Battle_PvE{
         if (!attacker.charge_on) {
             this.strike(attacker, defender);
         } else {
-            dam = this.release_attack_damage(attacker);
+            dam = this.release_attack_damage(attacker,defender);
 
             res = defender.receive_damage(dam);
 
@@ -225,7 +225,7 @@ module.exports = class Battle_PvE{
         this.disrupt_message(attacker, defender, res[0]);
 
         if (defender.charge_on) {
-            dam = Math.floor(this.release_attack_damage(defender) / 2);
+            dam = Math.floor(this.release_attack_damage(defender, defender) / 2);
             res = defender.receive_damage(dam);
             defender.charge_on = false;
             defender.charge_count = 0;
@@ -237,7 +237,16 @@ module.exports = class Battle_PvE{
     }
 
     item_use(attacker, defender, num) {
-        this.message += attacker.battle_inventory[num].use([this, attacker]);
+        if (attacker.type === "player") {
+            this.message += attacker.battle_inventory[num].use([this, attacker]);
+        } else if (attacker.type === "enemy") {
+            if (attacker.items.length === 0) {
+                this.strike(attacker, defender);
+            } else {
+                this.message += attacker.items[Math.floor(Math.random()*attacker.items.length)].use([this, attacker]);
+            }
+        }
+
     }
 
 
@@ -337,15 +346,16 @@ module.exports = class Battle_PvE{
         }
     }
 
-    release_attack_damage(attacker) {
-        let dam, p;
-        dam = 0;
+    release_attack_damage(attacker, defender) {
+        let dam, p, def;
+        def = Math.floor(defender.def/2);
+        dam = def;
         switch (attacker.type) {
             case "player": {
                 let i;
                 for (i = 0; i <= attacker.charge_count; i++) {
                     p = Tools.getRandomIntFromInterval(0, attacker.weapon.atk_P);
-                    dam += attacker.atk + attacker.weapon.atk + p + attacker.lv;
+                    dam += attacker.atk + attacker.weapon.atk + p + attacker.lv - def;
                 }
                 break;
             }
@@ -353,7 +363,7 @@ module.exports = class Battle_PvE{
                 let i;
                 for (i = 0; i <= attacker.charge_count; i++) {
                     p = Tools.getRandomIntFromInterval(0, attacker.atk_P);
-                    dam += attacker.atk + p + attacker.lv;
+                    dam += attacker.atk + p + attacker.lv - def;
                 }
                 break;
             }

@@ -59,7 +59,7 @@ module.exports = class Spawn {
                 enemies = this.enemies_lv_dict[lv];
             }
         }
-        enemy = new Enemy(true, enemies[Math.floor(Math.random()*enemies.length)]);
+        enemy = new Enemy(false, enemies[Math.floor(Math.random()*enemies.length)]);
         return enemy;
     }
 

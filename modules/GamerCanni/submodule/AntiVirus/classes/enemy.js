@@ -8,8 +8,6 @@ const Weapon = require('./weapon');
 const Item = require('./item');
 const Battle_PvE = require('./battle_pve');
 
-console.log(Item);
-
 module.exports = class Enemy {
     constructor(load, data) {
         if(load) {
@@ -27,21 +25,46 @@ module.exports = class Enemy {
                 this.auto_leveler(data.autolv_data);
             }
 
+            if (data.items) {
+                this.loaditems(data.items);
+            }
 
-            //this.loaditems(data.items);
 
             this.exp_gain = data.exp_gain;
             this.cc_gain = data.cc_gain;
 
             this.attack_patterns = data.attack_patterns;
-            this.curPattern = undefined;
-            this.curPatternMoveNum = 0;
-            this.charge_on = false;
-            this.charge_count = 0;
+        } else {
+            this.name = data.name;
+            this.id = data.id;
+            this.type = data.type;
+            this.lv = data.lv;
+            this.maxHP = data.maxHP;
+            this.atk = data.atk;
+            this.atk_P = data.atk_P;
+            this.def = data.def;
+            this.ini = data.ini;
+            this.exp_gain = data.exp_gain;
+            this.cc_gain = data.cc_gain;
 
-            this.type = "enemy";
-            this.curHP = this.maxHP;
+            if (data.autolv) {
+                this.auto_leveler(data.autolv_data);
+            }
+
+            this.items = data.items;
+
+
+
+
+            this.attack_patterns = data.attack_patterns;
         }
+        this.curPattern = undefined;
+        this.curPatternMoveNum = 0;
+        this.charge_on = false;
+        this.charge_count = 0;
+
+        this.type = "enemy";
+        this.curHP = this.maxHP;
     }
 
     loaditems(list) {
@@ -61,6 +84,9 @@ module.exports = class Enemy {
         this.atk_P += Math.floor(auto.atk_P * mod);
         this.def += Math.floor(auto.def * mod);
         this.ini += Math.floor(auto.ini * mod);
+
+        this.exp_gain += Math.floor(auto.experience * mod) + auto.experience_add;
+        this.cc_gain += Math.floor(auto.cc * mod) + auto.cc_add;
     }
 
     get_next_attack() {
