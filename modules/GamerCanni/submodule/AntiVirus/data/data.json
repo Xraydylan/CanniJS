@@ -1,1 +1,1 @@
-{}
+{"player_data":[{"name":"DDD","id":12345678,"lv":1,"atk":1,"def":1,"ini":2,"maxHP":10,"state":"alive","weapon":{"name":"Small Plasmagun","id":2,"lv":1,"atk":2,"atk_P":0,"def":0,"def_P":0,"starter":true,"value":10,"type":"weapon","info":"Small Plasmagun causes up to 2 direct damage and up to 0 hit damage.\n\n"},"experiance":0,"cc":0,"inventory":[],"weapon_inventory":[{"name":"Small Plasmagun","id":2,"lv":1,"atk":2,"atk_P":0,"def":0,"def_P":0,"starter":true,"value":10,"type":"weapon","info":"Small Plasmagun causes up to 2 direct damage and up to 0 hit damage.\n\n"}]}]}

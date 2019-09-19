@@ -60,6 +60,7 @@ module.exports = class Player {
         this.shop_category = "n";
         this.curShop = undefined;
         this.equip_on = false;
+        this.help_on = false;
 
 
         this.get_shops();

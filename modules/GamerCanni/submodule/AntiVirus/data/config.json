@@ -42,7 +42,7 @@
 
   "levelup": "Congratulations %s!\nYour Level increased!\nYour are Level %s. (Next Level Up: %s/%s exp)\n\n",
 
-  "info": "Infosheet of AVS member: %s\n",
+  "info": "Info Sheet of AVS member: %s\n",
   "info_normal" : "Everything is normal.",
   "info_available_stat_points" : "You have status points available. (%s available status points)\n",
 
@@ -98,6 +98,10 @@
   "selector_no_weapons": "%s, you currently don´t have any Weapons...\n",
   "selector_pattern_weapons" : "%s:  %s%s\n",
   "startequip": "Here are all weapons you have:\n",
-  "weapon_already_equipped": "You have already equipped %s.\n"
+  "weapon_already_equipped": "You have already equipped %s.\n",
+
+  "starthelp" : "This is the help menu.\nSelect a topic:\n",
+  "selector_no_help": "There is no help...",
+  "selector_pattern_help" : "%s:  %s\n"
 
 }

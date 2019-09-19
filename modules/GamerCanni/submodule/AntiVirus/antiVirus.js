@@ -12,6 +12,7 @@ const Enemy = require('./classes/enemy');
 const Battle_PvE = require('./classes/battle_pve');
 const Shop = require('./classes/shop');
 const Spawn = require('./classes/spawn');
+const Help = require('./classes/help');
 const AV = require('./antiVirus');
 
 
@@ -32,6 +33,7 @@ AV.signup_state = {};
 AV.signup_name = {};
 
 AV.spawn;
+AV.help;
 
 AV.debug_on = false;
 AV.dev = true;
@@ -74,6 +76,8 @@ module.exports = class AntiVirus {
                 return this.shop_manager(msg, input, p);
             } else if (p.equip_on) {
                 return this.equip_manager(msg, input, p);
+            } else if (p.help_on) {
+                return this.help_manager(msg, input, p);
             }
 
             if (AV.dev) {
@@ -93,8 +97,10 @@ module.exports = class AntiVirus {
                 this.shop_start(msg,p);
             } else if(this.input_is_list(input,["weapons", "w", "equipment", "equip", "eq"])) {
                 this.equip_start(msg,p);
-            } else if (this.input_is_list(input,["scan","s"])) {
+            } else if (this.input_is_list(input,["scan","sc"])) {
                 this.scan_for_enemy(msg,p);
+            } else if (this.input_is_list(input,["help","h"])) {
+                this.help_start(msg,p);
             }
 
 
@@ -119,7 +125,8 @@ module.exports = class AntiVirus {
         this.loadEnemies();
         this.loadShops();
         this.loadPlayerData();
-        this.loadSpawn()
+        this.loadSpawn();
+        this.loadHelp();
     }
 
     static loadWeapons() {
@@ -235,11 +242,40 @@ module.exports = class AntiVirus {
         AV.spawn = new Spawn();
     }
 
+    static loadHelp() {
+        let txt_path = AV.av_path + "/data/text/help";
+        AV.help = new Help(txt_path);
+    }
+
     static save_players() {
         let path = AV.av_path + "/data/data.json";
         let save;
-        save = {"player_data": AV.player_data};
+        let proc = this.process_player_data(AV.player_data);
+        save = {"player_data": proc};
         fs.writeFile(path, JSON.stringify(save), function (err) {if (err) throw err;});
+    }
+
+    static process_player_data(data) {
+        let p_list = [];
+        let p_simple = {};
+        data.forEach(player => {
+            p_simple = {};
+            p_simple.name = player.name;
+            p_simple.id = player.id;
+            p_simple.lv = player.lv;
+            p_simple.atk = player.atk;
+            p_simple.def = player.def;
+            p_simple.ini = player.ini;
+            p_simple.maxHP = player.maxHP;
+            p_simple.state = player.state;
+            p_simple.weapon = player.weapon;
+            p_simple.experiance = player.experiance;
+            p_simple.cc = player.cc;
+            p_simple.inventory = player.inventory;
+            p_simple.weapon_inventory = player.weapon_inventory;
+            p_list.push(p_simple);
+        });
+        return p_list;
     }
 
     static new_player(msg, name) {
@@ -748,6 +784,31 @@ module.exports = class AntiVirus {
         }
         if (this.input_is_list(input, ["back","b"])) {
             p.equip_on = false;
+        }
+    }
+
+    static help_start(msg,p) {
+        let message = "";
+        p.help_on = true;
+        message += Tools.parseReply(AV.config.starthelp);
+        message += AV.help.selector_help;
+        this.senderDM(msg, message);
+    }
+
+    static help_manager(msg, input, p) {
+        let pre, num, cat;
+        let message = "";
+        pre = input.split(" ");
+        num = parseInt(pre[0]);
+        if (num) {
+            if (num <= AV.help.categories.length) {
+                cat = AV.help.categories[num - 1];
+                message += AV.help.get_help_info(cat);
+                this.senderDM(msg, message);
+            }
+        }
+        if (this.input_is_list(input, ["back","b"])) {
+            p.help_on = false;
         }
     }
 

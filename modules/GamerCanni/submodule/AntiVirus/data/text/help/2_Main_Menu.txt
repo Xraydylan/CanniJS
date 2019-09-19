@@ -1,0 +1,25 @@
+Main Menu
+In the main menu you have several commands, which you can use:
+info/i
+Display Member Info Sheet.
+
+stats/st
+Show your stats.
+
+use points/up
+Use your available status points.
+
+inventory/inv
+Open you inventory.
+
+shop/sh
+Go to the shops.
+
+weapons/w/equipment/equip/eq
+View and select your weapons.
+
+scan/sc
+Scan for Enemies and engage in battle.
+
+help/h
+View help.

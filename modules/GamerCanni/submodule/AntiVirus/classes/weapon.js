@@ -39,9 +39,7 @@ module.exports = class Weapon {
 
     loadinfo(pre) {
         let text = "";
-
         text = Tools.parseReply(pre, [this.name, this.atk, this.atk_P]);
-
         this.info = text;
     }
 

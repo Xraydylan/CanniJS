@@ -1,0 +1,37 @@
+Battle
+The battle is turn based. The initiative value determines how goes first.
+Each round you can either use an attack, an item or compare your stats to the enemy stats.
+
+These are the 4 main attacks:
+
+strike/st:
+This is your normal balanced attack.
+
+
+brute force/br:
+The brute force attack is stronger attack, but it decreases you initiative.
+
+
+charge/ch:
+You can charge for a big attack for a following turn.
+You can charge for how many turns you want.
+While you are charging you can only continue to charge or unleash your attack.
+
+
+release/re:
+To unleash your charged attack.
+
+
+disrupt/dis:
+The disrupt attack is a weaker attack, but it increases you initiative.
+A disrupt attack can disrupt an enemies charge and cause damage proportional to the charged rounds.
+Don´t forget: Enemies can disrupt you as well.
+
+
+You can also try to use an item.
+Use item/i to look at your items. Type the number of the item to use it.
+If you don´t want to use any item leave the item menu with back/b.
+
+
+During battle you can also compare your stats to the enemy stats with data/d.
+This will not take up the round.
