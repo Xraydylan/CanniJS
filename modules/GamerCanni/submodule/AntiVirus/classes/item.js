@@ -101,10 +101,10 @@ module.exports = class Item {
             message += this.heal(target);
         }
         if (this.subtype === "damage") {
-            message += this.apply_damage(battle, user,target);
+            message += this.apply_damage(battle, user, target);
         }
         if (this.subtype === "drain") {
-            message += this.apply_drain(battle, user,target);
+            message += this.apply_drain(battle, user, target);
         }
 
 
@@ -113,6 +113,7 @@ module.exports = class Item {
     }
 
     static auto_select_target(battle,user) {
+        if (battle.subtype === "pve-single")
         if (user.type === "player") {
             return battle.enemy;
         } else if (user.type === "enemy") {

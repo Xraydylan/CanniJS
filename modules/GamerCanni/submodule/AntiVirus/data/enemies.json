@@ -1,6 +1,6 @@
 {
   "virus": [
-      {"name": "Blank Virus",
+      {"name": "Virus",
         "id": 1,
         "type": "virus",
         "lv": 1,
@@ -12,12 +12,13 @@
         "exp_gain": 2,
         "cc_gain": 1,
         "attack_patterns": [
-          "SCCRB",
-          "CRSDB",
-          "BBCRB",
-          "SBDCR",
-          "BSBBS"
-        ]
+          "ISCCRB",
+          "ICRSDB",
+          "IBBCRB",
+          "ISBDCR",
+          "IBSBBS"
+        ],
+        "items" : [3,3]
       },
     {"name": "Blue Virus",
       "id": 4,
@@ -47,8 +48,14 @@
       }
     }
   ],
+
+
+
+
+
+
   "worm": [
-    {"name": "Blank Worm",
+    {"name": "Worm",
       "id": 2,
       "type": "worm",
       "lv": 1,
@@ -95,8 +102,14 @@
       }
     }
   ],
+
+
+
+
+
+
   "trojan": [
-    {"name": "Blank Trojan",
+    {"name": "Trojan",
       "id": 3,
       "type": "trojan",
       "lv": 1,

@@ -28,6 +28,7 @@ module.exports = class Battle_PvE{
         this.enemy = enemy;
 
         this.type = "battle";
+        this.subtype = "pve-single";
 
         this.end_battle = false;
     }

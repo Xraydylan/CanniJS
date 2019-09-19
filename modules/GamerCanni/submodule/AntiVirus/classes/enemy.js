@@ -8,6 +8,8 @@ const Weapon = require('./weapon');
 const Item = require('./item');
 const Battle_PvE = require('./battle_pve');
 
+console.log(Item);
+
 module.exports = class Enemy {
     constructor(load, data) {
         if(load) {
@@ -25,6 +27,9 @@ module.exports = class Enemy {
                 this.auto_leveler(data.autolv_data);
             }
 
+
+            //this.loaditems(data.items);
+
             this.exp_gain = data.exp_gain;
             this.cc_gain = data.cc_gain;
 
@@ -37,6 +42,16 @@ module.exports = class Enemy {
             this.type = "enemy";
             this.curHP = this.maxHP;
         }
+    }
+
+    loaditems(list) {
+        let i;
+        let items = [];
+        list.forEach(id => {
+            i = Item.get_item_by_id(id);
+            items.push(new Item(true, i));
+        });
+        this.items = items;
     }
 
     auto_leveler(auto) {
@@ -99,6 +114,21 @@ module.exports = class Enemy {
             }
         }
         return message;
+    }
+
+    sub_item(id) {
+        let cond = true;
+        let count = 0;
+        this.items.forEach(item => {
+        if (cond) {
+            if (item.id.toString() === id.toString()) {
+                this.items.splice(count, 1);
+                cond = false;
+            }
+            count += 1;
+        }
+    })
+
     }
 
 };
