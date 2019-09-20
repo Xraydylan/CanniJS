@@ -22,6 +22,7 @@ module.exports = class Item {
             this.conversion = data.conversion;
             this.experience = data.experience;
             this.range = data.range;
+            this.bonus = data.bonus;
 
             this.number = data.number;
             this.loadinfo(data.info);
@@ -132,6 +133,8 @@ module.exports = class Item {
             target = Item.auto_select_target(battle, user);
         }
 
+        this.check_for_bonus(target.subtype);
+
         this.dealt_damage = target.receive_damage(this.damage)[0];
 
         if (target.type === "enemy") {
@@ -158,6 +161,12 @@ module.exports = class Item {
     gain_exp(user) {
         let ran = Tools.getRandomIntFromInterval(-this.range,this.range);
         return user.gain_exp(this.experience + ran);
+    }
+
+    check_for_bonus(type) {
+        if (this.bonus.includes(type)) {
+            this.damage += Math.ceil(this.damage * 0.6)
+        }
     }
 
 };

@@ -13,7 +13,7 @@ module.exports = class Enemy {
         if(load) {
             this.name = data.name;
             this.id = data.id;
-            this.type = data.type;
+            this.subtype = data.type;
             this.lv = data.lv;
             this.maxHP = data.maxHP;
             this.atk = data.atk;
@@ -37,7 +37,7 @@ module.exports = class Enemy {
         } else {
             this.name = data.name;
             this.id = data.id;
-            this.type = data.type;
+            this.subtype = data.subtype;
             this.lv = data.lv;
             this.maxHP = data.maxHP;
             this.atk = data.atk;
@@ -46,16 +46,7 @@ module.exports = class Enemy {
             this.ini = data.ini;
             this.exp_gain = data.exp_gain;
             this.cc_gain = data.cc_gain;
-
-            if (data.autolv) {
-                this.auto_leveler(data.autolv_data);
-            }
-
             this.items = data.items;
-
-
-
-
             this.attack_patterns = data.attack_patterns;
         }
         this.curPattern = undefined;

@@ -81,6 +81,7 @@
   "selector_no_shops": "%s, you can´t go to any shops at the moment.\n",
   "startshop": "Select a shop to go to:\n",
   "selector_no_items_in_shop" : "Sorry, there are no items in %s.",
+  "selector_no_weapons_in_shop" : "Sorry, there are no weapons in %s.",
   "selector_pattern_shopitems": "%s:  %s   cost: %s CC\n",
   "selector_pattern_shopweapons": "%s:  %s   cost: %s CC\n",
   "selector_pattern_category" : "%s:  %s\n",

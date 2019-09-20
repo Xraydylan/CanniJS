@@ -405,7 +405,7 @@ module.exports = class AntiVirus {
     }
 
     static battle_start(msg, p) {
-        let mon = new Enemy(true, AV.virus[0]);
+        let mon = new Enemy(false, AV.virus[0]);
         p.battle = new Battle_PvE(p, mon);
         this.sender(msg, Tools.parseReply(AV.config.startcombat,[mon.name]));
     }
@@ -614,14 +614,18 @@ module.exports = class AntiVirus {
                     p.shop_category = p.curShop.categories[num - 1].type;
                     message += Tools.parseReply(p.curShop.category_message(p.shop_category));
                     this.senderDM(msg, message);
-                } else if (this.input_is_list(input, ["back","b", "exit", "e"])) {
+                } else if (this.input_is_list(input, ["back","b"])) {
                     p.shop_select_on = true;
                     message += Tools.parseReply(AV.config.startshop);
                     message += p.selector_shop;
                     this.senderDM(msg, message);
-                } else if (this.input_is_list(input, ["exit", "e"])) {
+                } else if (this.input_is_list(input,["exit", "e"])) {
+                    message += Tools.parseReply(AV.config.shop_exit, [p.curShop.name]);
                     p.shop_select_on = false;
                     p.shop_on = false;
+                    p.shop_category = "n";
+                    p.curShop = undefined;
+                    this.senderDM(msg, message);
                 }
             } else if (p.shop_category === "i") {
                 if (this.input_starts_word_list(input,["info", "i"])) {

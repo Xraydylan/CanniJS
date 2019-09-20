@@ -81,7 +81,7 @@ module.exports = class Shop {
         let count = 1;
 
         if (this.shopweapons.length <= 0) {
-            sel += Tools.parseReply(AV.config.selector_no_items_in_shop, [this.name]);
+            sel += Tools.parseReply(AV.config.selector_no_weapons_in_shop, [this.name]);
             this.weapon_count = count - 1;
         } else {
             this.shopweapons.forEach(weapon => {
@@ -97,7 +97,7 @@ module.exports = class Shop {
         let sel = "";
         let count = 1;
 
-        if (this.shopitems.length <= 0 && this.shopweapons.length) {
+        if (this.shopitems.length <= 0 && this.shopweapons.length <= 0) {
             sel += Tools.parseReply(AV.config.selector_no_items_in_shop, [this.name]);
             this.category_count = count - 1;
         } else {
