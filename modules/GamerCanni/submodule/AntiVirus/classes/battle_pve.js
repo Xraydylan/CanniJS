@@ -9,12 +9,14 @@ const Item = require('./item');
 const Enemy = require('./enemy');
 
 module.exports = class Battle_PvE{
-    constructor(player, enemy) {
+    constructor(player, enemy, grind) {
         player.battle_on = true;
         player.battle_id = player.id;
 
         enemy.curHP = enemy.maxHP;
         player.curHP = player.maxHP;
+
+        this.grind = grind;
 
         enemy.charge_on = false;
         player.charge_on = false;
@@ -117,7 +119,7 @@ module.exports = class Battle_PvE{
     defeat_check(attacker, defender) {
         let defeated = defender.curHP <= 0;
         if (defeated) {
-            this.message += defender.defeated_message(attacker);
+            this.message += defender.defeated_message(attacker, this.grind);
             this.end_battle = true;
         }
         return defeated;

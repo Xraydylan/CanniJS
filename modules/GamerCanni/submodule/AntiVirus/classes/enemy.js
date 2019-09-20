@@ -109,9 +109,11 @@ module.exports = class Enemy {
         }
     }
 
-    defeated_message(player) {
+    defeated_message(player, grind = false) {
         let message = Tools.parseReply(AV.config.enemy_defeat, [player.name, this.name]);
-        message += player.gain_exp(this.exp_gain);
+        if (!grind) {
+            message += player.gain_exp(this.exp_gain);
+        }
         message += player.gain_cc(this.cc_gain);
         return message;
     }

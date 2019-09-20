@@ -21,5 +21,8 @@ View and select your weapons.
 scan/sc
 Scan for Enemies and engage in battle.
 
+girnd/gr
+Scans for weaker enemies. (You won´t gain experience.)
+
 help/h
 View help.

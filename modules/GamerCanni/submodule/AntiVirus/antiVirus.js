@@ -98,7 +98,9 @@ module.exports = class AntiVirus {
             } else if(this.input_is_list(input,["weapons", "w", "equipment", "equip", "eq"])) {
                 this.equip_start(msg,p);
             } else if (this.input_is_list(input,["scan","sc"])) {
-                this.scan_for_enemy(msg,p);
+                this.scan_for_enemy(msg,p,false);
+            } else if (this.input_is_list(input,["grind","gr"])) {
+                this.scan_for_enemy(msg,p,true);
             } else if (this.input_is_list(input,["help","h"])) {
                 this.help_start(msg,p);
             }
@@ -397,10 +399,10 @@ module.exports = class AntiVirus {
 
 
 
-    static scan_for_enemy(msg,p) {
+    static scan_for_enemy(msg,p,grind) {
         let message, enemy;
-        [message, enemy] = AV.spawn.spawn(msg,p);
-        p.battle = new Battle_PvE(p, enemy);
+        [message, enemy] = AV.spawn.spawn(msg,p,grind);
+        p.battle = new Battle_PvE(p, enemy, grind);
         this.sender(msg, Tools.parseReply(message));
     }
 

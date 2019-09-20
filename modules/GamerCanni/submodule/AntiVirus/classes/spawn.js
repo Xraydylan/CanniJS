@@ -31,18 +31,23 @@ module.exports = class Spawn {
         return dict;
     }
 
-    spawn(msg, p) {
+    spawn(msg, p, grind) {
         let enemy;
         let message = "";
-        enemy = this.get_enemy(p);
+        enemy = this.get_enemy(p, grind);
         message += this.spawn_message(msg, p, enemy);
         return [message,enemy];
     }
 
-    get_enemy(p) {
+    get_enemy(p,grind) {
         let random, lim_down, lim_up, lv, enemies, enemy;
         random = Tools.getRandomIntFromInterval(1,100);
-        lv = p.lv;
+        if (grind) {
+            lv = p.lv - 1;
+            if (lv <= 0) {lv = 1;}
+        } else {
+            lv = p.lv;
+        }
         [lim_down, lim_up] = this.determine_limits(p);
 
         if (lim_down <= random) {
