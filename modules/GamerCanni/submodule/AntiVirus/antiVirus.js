@@ -502,7 +502,7 @@ module.exports = class AntiVirus {
             p.ini += 1;
             p.stat_points -= 1;
             message += Tools.parseReply(AV.config.increase_ini)
-        } else if (this.input_is_list(input, ["stop","s"])) {
+        } else if (this.input_is_list(input, ["back","b"])) {
             p.stat_select_on = false;
             message += Tools.parseReply(AV.config.points_stop);
         }

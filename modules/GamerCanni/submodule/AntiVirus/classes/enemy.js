@@ -53,6 +53,8 @@ module.exports = class Enemy {
         this.curPatternMoveNum = 0;
         this.charge_on = false;
         this.charge_count = 0;
+        this.def_bonus = false;
+        this.def_bonus_val = 0.4;
 
         this.type = "enemy";
         this.curHP = this.maxHP;
@@ -100,7 +102,13 @@ module.exports = class Enemy {
     }
 
     receive_damage(dam) {
-        let net = dam - this.def;
+        let net, bon;
+        if (this.def_bonus) {
+            bon = Math.ceil(this.def * this.def_bonus_val)
+        } else {
+            bon = 0;
+        }
+        net = dam - (this.def + bon);
         if (net > 0) {
             this.curHP = this.curHP - net;
             return [net, this.curHP]

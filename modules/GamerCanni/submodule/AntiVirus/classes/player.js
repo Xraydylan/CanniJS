@@ -47,6 +47,8 @@ module.exports = class Player {
         this.battle_on = false;
         this.battle_id = undefined;
         this.battle = undefined;
+        this.def_bonus = false;
+        this.def_bonus_val = 0.5;
 
         this.stat_select_on = false;
         this.stat_points = 0;
@@ -61,7 +63,6 @@ module.exports = class Player {
         this.curShop = undefined;
         this.equip_on = false;
         this.help_on = false;
-
 
         this.get_shops();
         this.item_selector();
@@ -126,7 +127,13 @@ module.exports = class Player {
     }
 
     receive_damage(dam) {
-        let net = dam - this.def;
+        let net, bon;
+        if (this.def_bonus) {
+            bon = Math.ceil(this.def * this.def_bonus_val)
+        } else {
+            bon = 0;
+        }
+        net = dam - (this.def + bon);
         if (net > 0) {
             this.curHP = this.curHP - net;
             return [net, this.curHP]

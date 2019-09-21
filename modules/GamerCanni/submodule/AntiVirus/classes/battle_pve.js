@@ -85,9 +85,11 @@ module.exports = class Battle_PvE{
 
     attack_processor(attacker, defender, num) {
 
+        attacker.def_bonus = false;
         switch (attacker.battle_attack) {
             case "strike":{
                 this.strike(attacker, defender);
+                attacker.def_bonus = true;
                 break;
             }
             case "brute":{
