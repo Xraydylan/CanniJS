@@ -118,7 +118,7 @@
       "atk_P": 6,
       "def": 0,
       "def_P": 0,
-      "starter": true,
+      "starter": false,
       "value": 20,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
     },
@@ -130,7 +130,7 @@
       "atk_P": 7,
       "def": 0,
       "def_P": 0,
-      "starter": true,
+      "starter": false,
       "value": 30,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
     },
@@ -142,7 +142,7 @@
       "atk_P": 8,
       "def": 0,
       "def_P": 0,
-      "starter": true,
+      "starter": false,
       "value": 40,
 
       "info": "%s causes up to %s direct damage and up to %s hit damage.\nThe Sani Data-Launcher is Sani personal favourite.\n\n"
@@ -157,7 +157,7 @@
       "atk_P": 0,
       "def": 0,
       "def_P": 0,
-      "starter": true,
+      "starter": false,
       "value": 45,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\nCompressed Boop effectiveness!\n\n"
     },
@@ -169,7 +169,7 @@
       "atk_P": 1,
       "def": 0,
       "def_P": 0,
-      "starter": true,
+      "starter": false,
       "value": 55,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\nThe ultimate boop weapon outside of Canni bot.\n\n"
     },
@@ -181,7 +181,7 @@
       "atk_P": 6,
       "def": 0,
       "def_P": 0,
-      "starter": true,
+      "starter": false,
       "value": 55,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\nCan you feel the incredible bass!\n\n"
     },
@@ -193,7 +193,7 @@
       "atk_P": 12,
       "def": 0,
       "def_P": 0,
-      "starter": true,
+      "starter": false,
       "value": 55,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\nThe mango isn´t even causing that much damage... It´s what happens after...\n\n"
     }
