@@ -1,13 +1,13 @@
 Equipment
-Outside of battle you can view your weapon and equip a new different one in the weapon menu.
+Outside of battle you can view your weapon and equip a different one in the weapon menu.
 Open it with weapons/w/equipment/equip/eq
 You´ll get a list of all your weapons.
 
-For information about the weapon use:
-info/i number
+For more info about a weapon, use:
+info/i weapon number
 
-To equip a weapon use:
-use/u/equip/eq number
+To equip a weapon, use:
+use/u/equip/eq weapon number
 
-To leave the weapon menu use:
+To leave the weapon menu, use:
 back/b

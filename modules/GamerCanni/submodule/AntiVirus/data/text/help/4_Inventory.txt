@@ -1,12 +1,12 @@
 Inventory
 Outside of battle you can open your inventory with the inventory/inv command.
-You´ll get a list of all your items.
+You'll see a list of all your items.
 
-For information about the item use:
-info/i number
+For more info about an item, use:
+info/i item number
 
-To try to use an item use:
-use/u number
+To use an item, use:
+use/u item number
 
-To leave your inventory use:
+To leave your inventory, use:
 back/b
