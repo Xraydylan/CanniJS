@@ -1,11 +1,11 @@
 {
   "shops": [
-    { "name": "Cannis Item Stand",
+    { "name": "Canni's Item Stand",
       "id": 1,
       "lv": 0,
       "items": [101,102,201,301,401],
       "weapons": [101,201,301],
-      "info_on_enter": "%s, you entered Cannis Item Stand.\n",
+      "info_on_enter": "%s, you entered Canni's Item Stand.\n",
       "categories": [
         {
         "name": "Items",
@@ -22,7 +22,7 @@
       "lv": 2,
       "items": [103,202,302,402],
       "weapons": [102,202,302],
-      "info_on_enter": "%s, you entered Small Canni Shop.\n",
+      "info_on_enter": "%s, you entered the Small Canni Shop.\n",
       "categories": [
         {
           "name": "Items",
@@ -39,7 +39,7 @@
       "lv": 3,
       "items": [104,203,303,403],
       "weapons": [103,203,303],
-      "info_on_enter": "%s, you entered Small Canni Shop.\n",
+      "info_on_enter": "%s, you entered the Canni Shop.\n",
       "categories": [
         {
           "name": "Items",
@@ -51,12 +51,12 @@
         }
       ]
     },
-    { "name": "Cannis Item Factory",
+    { "name": "Canni's Item Factory",
       "id": 4,
       "lv": 4,
       "items": [105,204,304,404],
       "weapons": [401],
-      "info_on_enter": "%s, you entered Small Canni Shop.\n",
+      "info_on_enter": "%s, you entered Canni's Item Factory.\n",
       "categories": [
         {
           "name": "Items",
@@ -68,12 +68,12 @@
         }
       ]
     },
-    { "name": "Sanis Sanitary Supplies",
+    { "name": "Sani's Sanitary Supplies",
       "id": 2,
       "lv": 4,
       "items": [106,107,108,405],
       "weapons": [],
-      "info_on_enter": "%s, you entered Small Canni Shop.\n",
+      "info_on_enter": "%s, you entered Sani's Sanitary Supplies.\n",
       "categories": [
         {
           "name": "Items",
@@ -81,12 +81,12 @@
         }
       ]
     },
-    { "name": "Wachmanns Weapons (*tm*)",
+    { "name": "Wachmann Weapons (*tm*)",
       "id": 5,
       "lv": 4,
       "items": [205,206,207],
       "weapons": [104,204,304],
-      "info_on_enter": "%s, you entered Small Canni Shop.\n",
+      "info_on_enter": "%s, you entered Wachmann Weapons.\n",
       "categories": [
         {
           "name": "Items",
@@ -98,12 +98,12 @@
         }
       ]
     },
-    { "name": "Cannis Unlimited Supply Shop",
+    { "name": "Canni's Unlimited Supply Shop",
       "id": 6,
       "lv": 5,
       "items": [208,305],
       "weapons": [402,403,404],
-      "info_on_enter": "%s, you entered Small Canni Shop.\n",
+      "info_on_enter": "%s, you entered Canni's Unlimited Supply Shop.\n",
       "categories": [
         {
           "name": "Items",
