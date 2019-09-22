@@ -1,3 +1,9 @@
 Game Info
---Insert Game Description--
-Turn and Text based RPG...
+This is the AntiVirusSystem (AVS) of Canni.
+You are a member of it and your job is it to defeat dangerous digital threats in turn based combat.
+At your sign up you were given your first weapon but with enough Canni Coins (CC) you will soon be able to buy better and stronger ones.
+You will receive more CC when you defeat an enemy in combat along with experience points.
+With enough experience points can level up and get access to more and better shops.
+Keep in mind as you get stronger, you will encounter stronger opponents.
+
+But most importantly have fun with this turn and text based RPG.
