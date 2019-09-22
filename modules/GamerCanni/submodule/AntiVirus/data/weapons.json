@@ -1,9 +1,9 @@
 {
   "weapons": [
-    {"name": "Small Laser",
+    {
+      "name": "Small Laser",
       "id": 101,
       "lv": 1,
-
       "atk": 1,
       "atk_P": 2,
       "def": 0,
@@ -12,10 +12,10 @@
       "value": 10,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
     },
-    {"name": "Medium Laser",
+    {
+      "name": "Medium Laser",
       "id": 102,
       "lv": 2,
-
       "atk": 2,
       "atk_P": 4,
       "def": 0,
@@ -24,10 +24,10 @@
       "value": 20,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
     },
-    {"name": "Large Laser",
+    {
+      "name": "Large Laser",
       "id": 103,
       "lv": 3,
-
       "atk": 3,
       "atk_P": 4,
       "def": 0,
@@ -36,23 +36,22 @@
       "value": 30,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
     },
-    {"name": "Canni Laser",
+    {
+      "name": "Canni Laser",
       "id": 104,
       "lv": 4,
-
       "atk": 5,
       "atk_P": 5,
       "def": 0,
       "def_P": 0,
       "starter": false,
       "value": 40,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\nCanni really likes Lasers...\n\n"
+      "info": "%s causes up to %s direct damage and up to %s hit damage.\nCanni *really* likes Lasers!\n\n"
     },
-
-    {"name": "Small Plasmagun",
+    {
+      "name": "Small Plasmagun",
       "id": 201,
       "lv": 1,
-
       "atk": 2,
       "atk_P": 0,
       "def": 0,
@@ -61,10 +60,10 @@
       "value": 10,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
     },
-    {"name": "Medium Plasmagun",
+    {
+      "name": "Medium Plasmagun",
       "id": 202,
       "lv": 2,
-
       "atk": 4,
       "atk_P": 0,
       "def": 0,
@@ -73,10 +72,10 @@
       "value": 20,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
     },
-    {"name": "Large Plasmagun",
+    {
+      "name": "Large Plasmagun",
       "id": 203,
       "lv": 3,
-
       "atk": 5,
       "atk_P": 1,
       "def": 0,
@@ -85,24 +84,23 @@
       "value": 30,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
     },
-    {"name": "Wachmann Plasmagun",
+    {
+      "name": "Wachmann Plasmagun",
       "id": 204,
       "lv": 4,
-
       "atk": 6,
       "atk_P": 2,
       "def": 0,
       "def_P": 0,
       "starter": false,
       "value": 40,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\nThe Wachmann himself swears on the effectiveness of the Wachmann Plasmagun.\n\n"
+      "info": "%s causes up to %s direct damage and up to %s hit damage.\nWachmann himself swears by the effectiveness of the *Wachmann Plasmagun*.\n\n"
     },
-
-    {"name": "Small Data-Launcher",
+    {
+      "name": "Small Data-Launcher",
       "id": 301,
       "lv": 1,
       "atk": 0,
-
       "atk_P": 4,
       "def": 0,
       "def_P": 0,
@@ -110,10 +108,10 @@
       "value": 10,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
     },
-    {"name": "Medium Data-Launcher",
+    {
+      "name": "Medium Data-Launcher",
       "id": 302,
       "lv": 2,
-
       "atk": 1,
       "atk_P": 6,
       "def": 0,
@@ -122,10 +120,10 @@
       "value": 20,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
     },
-    {"name": "Large Data-Launcher",
+    {
+      "name": "Large Data-Launcher",
       "id": 303,
       "lv": 3,
-
       "atk": 2,
       "atk_P": 7,
       "def": 0,
@@ -134,26 +132,23 @@
       "value": 30,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
     },
-    {"name": "Sani Data-Launcher",
+    {
+      "name": "Sani Data-Launcher",
       "id": 304,
       "lv": 4,
-
       "atk": 3,
       "atk_P": 8,
       "def": 0,
       "def_P": 0,
       "starter": false,
       "value": 40,
-
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\nThe Sani Data-Launcher is Sani personal favourite.\n\n"
+      "info": "%s causes up to %s direct damage and up to %s hit damage.\nSani's personal favourite.\n\n"
     },
-
-
-    {"name": "Boop Gun",
+    {
+      "name": "Boop Gun",
       "id": 401,
       "lv": 4,
       "atk": 7,
-
       "atk_P": 0,
       "def": 0,
       "def_P": 0,
@@ -161,41 +156,41 @@
       "value": 45,
       "info": "%s causes up to %s direct damage and up to %s hit damage.\nCompressed Boop effectiveness!\n\n"
     },
-    {"name": "Megaboop Gun",
+    {
+      "name": "Megaboop Gun",
       "id": 402,
       "lv": 5,
       "atk": 9,
-
       "atk_P": 1,
       "def": 0,
       "def_P": 0,
       "starter": false,
       "value": 55,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\nThe ultimate boop weapon outside of Canni bot.\n\n"
+      "info": "%s causes up to %s direct damage and up to %s hit damage.\nThe world's second most powerful boop weapon, right after Canni Bot.\n\n"
     },
-    {"name": "Bass Cannon",
+    {
+      "name": "Bass Cannon",
       "id": 403,
       "lv": 5,
       "atk": 6,
-
       "atk_P": 6,
       "def": 0,
       "def_P": 0,
       "starter": false,
       "value": 55,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\nCan you feel the incredible bass!\n\n"
+      "info": "%s causes up to %s direct damage and up to %s hit damage.\nFeel the bass!\n\n"
     },
-    {"name": "Mango-Launcher",
+    {
+      "name": "Mango-Launcher",
       "id": 404,
       "lv": 5,
       "atk": 3,
-
       "atk_P": 12,
       "def": 0,
       "def_P": 0,
       "starter": false,
       "value": 55,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\nThe mango isn´t even causing that much damage... It´s what happens after...\n\n"
+      "info": "%s causes up to %s direct damage and up to %s hit damage.\nThe mango doesn't actually cause that much damage. It's what happens afterwards...\n\n"
     }
   ]
 }

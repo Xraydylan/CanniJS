@@ -1,22 +1,21 @@
 Shops
-Outside of battle you can go to different shops and buy new items or weapons.
-Depending on your level you get to see different shops.
+Outside of battle you can visit shops to buy new items or weapons.
+New shops will become available as your level increases.
 
-First use the shop/sh command to get a list of the available shops.
-To select one type the number.
+Use the shop/sh command to see a list of available shops.
+To visit a shop, type its number.
 
-After a shop is selected you have to choose a category of the shop in the same way.
+when visiting a shop, you must choose a shop category in the same way.
+This will show you a list of all available item/weapons.
 
-Now you get a list of all available item/weapons.
-
-For information about an item/weapon use:
+For information about an item/weapon, use:
 info/i number
 
-To buy an item/weapon use:
+To buy an item/weapon, use:
 buy/bu number
 
-To you one selection menu back use:
+To go back to the previous menu, use:
 back/b
 
-To entirely leave the shop use:
+To leave a shop, use:
 exit/e

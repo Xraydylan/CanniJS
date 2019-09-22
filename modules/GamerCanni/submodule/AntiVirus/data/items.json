@@ -8,7 +8,7 @@
       "restoreHP": 5,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s lost HP.\n\n",
+      "info": "%s restores up to %s HP.\n\n",
 
       "number": 1
     },
@@ -20,7 +20,7 @@
       "restoreHP": 8,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s lost HP.\n\n",
+      "info": "%s restores up to %s HP.\n\n",
 
       "number": 1
     },
@@ -32,7 +32,7 @@
       "restoreHP": 12,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s lost HP.\n\n",
+      "info": "%s restores up to %s HP.\n\n",
 
       "number": 1
     },
@@ -44,7 +44,7 @@
       "restoreHP": 15,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s lost HP.\n\n",
+      "info": "%s restores up to %s HP.\n\n",
 
       "number": 1
     },
@@ -56,7 +56,7 @@
       "restoreHP": 18,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s lost HP.\n\n",
+      "info": "%s restores up to %s HP.\n\n",
 
       "number": 1
     },
@@ -68,7 +68,7 @@
       "restoreHP": 22,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s lost HP.\n\n",
+      "info": "%s restores up to %s HP.\n\n",
 
       "number": 1
     },
@@ -80,7 +80,7 @@
       "restoreHP": 25,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s lost HP.\n\n",
+      "info": "%s restores up to %s HP.\n\n",
 
       "number": 1
     },
@@ -92,7 +92,7 @@
       "restoreHP": 100,
       "heal_full": true,
       "reusable": false,
-      "info": "%s completely restores your lost HP.\n\n",
+      "info": "%s completely restores your HP.\n\n",
 
       "number": 1
     },
@@ -104,7 +104,7 @@
       "subtype": "damage",
       "damage": 4,
       "reusable": false,
-      "info": "%s causes up to %s damage to an enemy.\n\n",
+      "info": "%s deals up to %s damage to an enemy.\n\n",
 
       "number": 1
     },
@@ -115,7 +115,7 @@
       "subtype": "damage",
       "damage": 8,
       "reusable": false,
-      "info": "%s causes up to %s damage to an enemy.\n\n",
+      "info": "%s deals up to %s damage to an enemy.\n\n",
 
       "number": 1
     },
@@ -126,7 +126,7 @@
       "subtype": "damage",
       "damage": 12,
       "reusable": false,
-      "info": "%s causes up to %s damage to an enemy.\n\n",
+      "info": "%s deals up to %s damage to an enemy.\n\n",
 
       "number": 1
     },
@@ -137,7 +137,7 @@
       "subtype": "damage",
       "damage": 18,
       "reusable": false,
-      "info": "%s causes up to %s damage to an enemy.\n\n",
+      "info": "%s deals up to %s damage to an enemy.\n\n",
 
       "number": 1
     },
@@ -150,7 +150,7 @@
       "damage": 12,
       "reusable": false,
       "bonus" : ["trojan"],
-      "info": "%s causes up to %s damage to an enemy.\nExtra damage against Trojans.\n\n",
+      "info": "%s deals up to %s damage to an enemy.\nDeals more damage to Trojans.\n\n",
 
       "number": 1
     },
@@ -162,7 +162,7 @@
       "damage": 12,
       "reusable": false,
       "bonus" : ["worm"],
-      "info": "%s causes up to %s damage to an enemy.\nExtra damage against Worms.\n\n",
+      "info": "%s deals up to %s damage to an enemy.\nDeals more damage to Worms.\n\n",
 
       "number": 1
     },
@@ -174,7 +174,7 @@
       "damage": 12,
       "reusable": false,
       "bonus" : ["virus"],
-      "info": "%s causes up to %s damage to an enemy.\nExtra damage against Viruses.\n\n",
+      "info": "%s deals up to %s damage to an enemy.\nDeals more damage to Viruses.\n\n",
 
       "number": 1
     },
@@ -186,7 +186,7 @@
       "damage": 1,
       "reusable": false,
       "bonus" : ["virus"],
-      "info": "%s causes up to %s damage to an enemy.\nExtra damage against Viruses.\n\n",
+      "info": "%s deals up to %s damage to an enemy.\nDeals more damage to Viruses.\n\n",
 
       "number": 1
     },
@@ -199,7 +199,7 @@
       "damage": 5,
       "conversion": 0.5,
       "reusable": false,
-      "info": "%s drains HP form an enemy and adds %s of the caused damage to your HP.\n\n",
+      "info": "%s drains HP from an enemy and restores your hp by %s of damage dealt.\n\n",
 
       "number": 1
     },
@@ -211,7 +211,7 @@
       "damage": 8,
       "conversion": 0.5,
       "reusable": false,
-      "info": "%s drains HP form an enemy and adds %s of the caused damage to your HP.\n\n",
+      "info": "%s drains HP from an enemy and restores your hp by %s of damage dealt.\n\n",
 
       "number": 1
     },
@@ -223,7 +223,7 @@
       "damage": 10,
       "conversion": 0.6,
       "reusable": false,
-      "info": "%s drains HP form an enemy and adds %s of the caused damage to your HP.\n\n",
+      "info": "%s drains HP from an enemy and restores your hp by %s of damage dealt.\n\n",
 
       "number": 1
     },
@@ -235,7 +235,7 @@
       "damage": 12,
       "conversion": 0.8,
       "reusable": false,
-      "info": "%s drains HP form an enemy and adds %s of the caused damage to your HP.\n\n",
+      "info": "%s drains HP from an enemy and restores your hp by %s of damage dealt.\n\n",
 
       "number": 1
     },
@@ -247,7 +247,7 @@
       "damage": 15,
       "conversion": 1,
       "reusable": false,
-      "info": "%s drains HP form an enemy and adds %sx of the caused damage to your HP.\n\n",
+      "info": "%s drains HP from an enemy and restores your hp by %sx ofdamage dealt.\n\n",
 
       "number": 1
     },
@@ -260,7 +260,7 @@
       "experience": 4,
       "range": 2,
       "reusable": false,
-      "info": "%s contains knowledge and grants you up to %s exp.\n\n",
+      "info": "%s contains knowledge and grants up to %s exp.\n\n",
 
       "number": 1
     },
@@ -272,7 +272,7 @@
       "experience": 8,
       "range": 3,
       "reusable": false,
-      "info": "%s contains knowledge and grants you up to %s exp.\n\n",
+      "info": "%s contains knowledge and grants up to %s exp.\n\n",
 
       "number": 1
     },
@@ -284,7 +284,7 @@
       "experience": 10,
       "range": 4,
       "reusable": false,
-      "info": "%s contains knowledge and grants you up to %s exp.\n\n",
+      "info": "%s contains knowledge and grants up to %s exp.\n\n",
 
       "number": 1
     },
@@ -296,7 +296,7 @@
       "experience": 13,
       "range": 2,
       "reusable": false,
-      "info": "%s contains knowledge and grants you up to %s exp.\n\n",
+      "info": "%s contains knowledge and grants up to %s exp.\n\n",
 
       "number": 1
     },
@@ -308,7 +308,7 @@
       "experience": 20,
       "range": 3,
       "reusable": false,
-      "info": "%s contains knowledge and grants you up to %s exp.\n\n",
+      "info": "%s contains knowledge and grants up to %s exp.\n\n",
 
       "number": 1
     }

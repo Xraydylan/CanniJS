@@ -1,16 +1,16 @@
 Level Up
 Once you gather enough experience points you level up.
-Per level up you get status points which you can use to increase your base stats (attack, defense, initiative).
+Each time you level up, you'll get stat points which you can use to increase your base stats (attack, defence, initiative).
 
-You can check with info/i in the main menu if you have any unused status points.
+You can check your remaining stat points using the info/i command in the main menu.
 
-To start spending your status points use:
+To spend your stat points use:
 use points/up
 
-Then you´ll see your base stats.
+This will show you your base stats.
 
-To spend one of your points use:
-attack/atk  or  defense/def  or  initiative/init
+To spend one of your points, use:
+attack/atk  or  defense/def  or  initiative/init to assign it to these stats respectively.
 
-If you want to go back before you´ve spent your status points use:
+If you want to cancel assigning stat points, use:
 back/b

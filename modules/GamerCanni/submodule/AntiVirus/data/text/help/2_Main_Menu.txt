@@ -1,28 +1,28 @@
 Main Menu
-In the main menu you have several commands, which you can use:
+In the main menu you have several commands which you can use:
 info/i
-Display Member Info Sheet.
+Display Member character sheet.
 
 stats/st
-Show your stats.
+Display your stats.
 
 use points/up
-Use your available status points.
+Spend your available stat points.
 
 inventory/inv
 Open you inventory.
 
 shop/sh
-Go to the shops.
+Visit a shops.
 
 weapons/w/equipment/equip/eq
-View and select your weapons.
+View and equip your weapons.
 
 scan/sc
-Scan for Enemies and engage in battle.
+Scan for enemies and engage in battle.
 
 grind/gr
-Scans for weaker enemies. (You won´t gain experience.)
+Scan for weaker enemies. (You won't gain experience.)
 
 help/h
 View help.
