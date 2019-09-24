@@ -58,6 +58,9 @@ module.exports = class Enemy {
 
         this.type = "enemy";
         this.curHP = this.maxHP;
+
+        this.target = undefined;
+        this.state = "alive";
     }
 
     loaditems(list) {
@@ -100,6 +103,77 @@ module.exports = class Enemy {
             return this.get_next_attack();
         }
     }
+
+    get_new_target(players) {
+        let p;
+        switch (this.subtype) {
+            case "virus": {
+                p = this.get_next_stronger(players);
+                this.target = p;
+                return p;
+            }
+            case "worm": {
+                p = this.get_next_weaker(players);
+                this.target = p;
+                return p;
+            }
+            case "trojan": {
+                p = this.get_random();
+                this.target = p;
+                return p;
+            }
+            default : {
+                this.target = players[0];
+                return players[0];
+            }
+        }
+    }
+
+    get_random(players) {
+        return players[Math.floor(Math.random()*players.length)];
+    }
+
+    get_next_stronger(players) {
+        let player = undefined;
+        let cond = false;
+        players.sort(Enemy.compare_lv);
+        players.forEach(p => {
+            if (!cond) {
+                player = p;
+                if (p.lv >= this.lv) {
+                    cond = true;
+                }
+            }
+        });
+        return player;
+    }
+
+    get_next_weaker(players) {
+        let player = undefined;
+        let cond = false;
+        players.sort(Enemy.compare_lv);
+        players = players.reverse();
+        players.forEach(p => {
+            if (!cond) {
+                player = p;
+                if (p.lv <= this.lv) {
+                    cond = true;
+                }
+            }
+        });
+        return player;
+    }
+
+    static compare_lv( a, b ) {
+        if ( a.lv < b.lv ){
+            return -1;
+        }
+        if ( a.lv > b.lv ){
+            return 1;
+        }
+        return 0;
+    }
+
 
     receive_damage(dam) {
         let net, bon;

@@ -5,12 +5,12 @@
   "DM_signup_1": "--Signup Message--\nEnter your name.",
   "DM_signup_2": "Is the name \"%s\" correct? (Yes/No)",
   "DM_signup_3": "Correct your name.",
-  "DM_signup_4": "AVS account created.\n--Welcome to the team message--\nCheck your stats by using the `stats` command.",
+  "DM_signup_4": "AVS account created.\n--Welcome to the team message--\nCheckout the help by using the `help` command.",
 
   "displayStats": "AVS Account:\nName: %s\nLevel: %s\nExp: %s/%s\nCanni Coins: %s\n\nHP: %s\nAttack: %s\nDefense: %s\nInitiative: %s\n\nWeapon: %s\nLevel: %s\nDirect Damage: %s\nHit Damage: %s",
 
   "startcombat": "An enemy appeared!\nYour Enemy is: %s\nFirst Round.\n(Strike, Brute force, Charge, Disrupt, Item, Data)",
-  "battle_choose_move": "%s, what will you do?\n(Strike, Brute force, Charge, Disrupt, Item)",
+  "battle_choose_move": "%s, what will you do?\n(Strike, Brute force, Charge, Disrupt, Item, Data)",
 
   "player_strike_message": "%s, your **Strike** attack hits %s for %s damage.\n%s now has %s HP.\n",
   "enemy_strike_message": "%s, %s hits you with a **Strike** attack. You receive %s damage.\n%s now has %s HP.\n",
@@ -103,5 +103,38 @@
 
   "starthelp" : "Help menu.\nChoose a topic:\n",
   "selector_no_help": "No help available.",
-  "selector_pattern_help" : "%s:  %s\n"
+  "selector_pattern_help" : "%s:  %s\n",
+
+  "multi_dm_channel":"You can´t start a multi player game in a DM channel.",
+  "multi_join_not_possible": "%s, The multi player battle has already begun. You can´t join it now.",
+  "multi_start_player_search" : "Starting multi player game.\nAlready confirmed players: %s\nWaiting for more players to join.",
+  "multi_already_in_battle" : "%s, ou seem to be already in a unfinished battle.",
+  "multi_new_player" : "A new player was added to the multi player battle.\nAlready confirmed players:\n",
+  "multi_new_player_pattern" : "%s\n",
+  "multi_remove_player" : "%s, you removed yourself from the multi player battle. The confirmed players are now:\n",
+  "multi_confirm_start" : "Please confrim the start of the multi player battle. Are you ready? (yes/no)",
+  "multi_start_combat" : "Multiple enemies appeared:\n",
+
+  "multi_start_enemy_pattern" : "%s LV:%s\n",
+
+  "multi_start_combat_2" : "Players! Choose your move. (Strike, Brute force, Charge, Disrupt, Item, Data)\n",
+  "multi_attack_already_selected": "%s, you already choose a move this turn.\n",
+  "selector_no_enemies": "Sorry, there are no enemies...\n",
+  "selector_pattern_enemies" : "%s: %s LV: %s\n",
+  "selector_no_players" : "Sorry, there are no players...\n",
+  "selector_pattern_players" : "%s: %s LV: %s\n",
+  "multi_attack_lock" : "%s, your selected attack has been locked.\n",
+
+  "player_defeated_target_message" : "%s misses the target %s because the target was already defeated.\n",
+  "enemy_defeated_target_message": "%s misses the target %s because the target was already defeated.\n",
+
+  "new_round_message": "\nRemaining enemies:\n",
+  "multi_new_target" : "%s is now targeting %s.\n",
+  "multi_defeated_can_not_attack" : "%s, you were defeated. You need to recover.\n",
+  "multi_lost" : "All players are defeated. The battle is over.",
+  "multi_won": "\nCongratulations! You won the battle!\n",
+  "choose_target_enemy": "%s, choose a enemy as target for your item.\n",
+  "choose_target_player": "%s, choose a player as target for your item:\n",
+  "multi_already_different_type" : "%s, there is already a multi player game of a different type on this channel.\n"
+
 }

@@ -5,7 +5,7 @@ You can choose to attack, use an item, or compare your stats to the enemy's stat
 These are the 4 main attacks:
 
 strike/st:
-This is your regular attack.
+This is your regular attack, which grands you a defense bonus.
 
 
 brute force/br:
@@ -34,4 +34,4 @@ If you don't want to use any item, you can leave the item menu with back/b.
 
 
 During battle you can compare your stats to the enemy's stats with data/d.
-This will end your turn.
+This will not end your turn.

@@ -23,6 +23,9 @@ module.exports = class Item {
             this.experience = data.experience;
             this.range = data.range;
             this.bonus = data.bonus;
+            if (!this.bonus) {
+                this.bonus = [];
+            }
 
             this.number = data.number;
             this.loadinfo(data.info);
@@ -96,6 +99,10 @@ module.exports = class Item {
 
         message += Tools.parseReply(AV.config.use_item, [user.name, this.name]);
 
+        if (battle.subtype === "pve-multi") {
+            target = user.target;
+        }
+
         if (this.subtype === "heal") {
             message += this.heal(target);
         }
@@ -112,13 +119,14 @@ module.exports = class Item {
     }
 
     static auto_select_target(battle,user) {
-        if (battle.subtype === "pve-single")
-        if (user.type === "player") {
-            return battle.enemy;
-        } else if (user.type === "enemy") {
-            return battle.player;
-        } else {
-            console.log("auto select target type error!");
+        if (battle.subtype === "pve-single") {
+            if (user.type === "player") {
+                return battle.enemy;
+            } else if (user.type === "enemy") {
+                return battle.player;
+            } else {
+                console.log("auto select target type error!");
+            }
         }
     }
 

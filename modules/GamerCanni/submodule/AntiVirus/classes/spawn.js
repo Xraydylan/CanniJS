@@ -7,7 +7,6 @@ const Player = require('./player');
 const Weapon = require('./weapon');
 const Item = require('./item');
 const Enemy = require('./enemy');
-const Battle_PvE = require('./battle_pve');
 
 module.exports = class Spawn {
     constructor() {
@@ -31,7 +30,7 @@ module.exports = class Spawn {
         return dict;
     }
 
-    spawn(msg, p, grind) {
+    spawn(msg, p, grind = false) {
         let enemy;
         let message = "";
         enemy = this.get_enemy(p, grind);

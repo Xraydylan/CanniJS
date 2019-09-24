@@ -9,7 +9,6 @@ const Enemy = require('./enemy');
 const Battle_PvE = require('./battle_pve');
 const Shop = require('./shop');
 
-
 module.exports = class Player {
     constructor(load, data) {
         this.name = data.name;
@@ -24,6 +23,7 @@ module.exports = class Player {
             this.weapon = new Weapon(true, data.weapon);
             this.experiance = data.experiance;
             this.cc = data.cc;
+            this.stat_points = data.stat_points;
             this.loadInventory(data.inventory);
             this.loadWeapon_Inventory(data.weapon_inventory)
         } else {
@@ -40,6 +40,7 @@ module.exports = class Player {
             this.inventory = [];
             this.weapon_inventory = [this.weapon];
             this.battle_inventory = [];
+            this.stat_points = 0;
         }
         this.curHP = this.maxHP;
 
@@ -49,9 +50,12 @@ module.exports = class Player {
         this.battle = undefined;
         this.def_bonus = false;
         this.def_bonus_val = 0.5;
+        this.attack_is_logged = false;
+
+        this.selected_battle_item = undefined;
+        this.item_target_finder_on = false;
 
         this.stat_select_on = false;
-        this.stat_points = 0;
 
         this.stat_point_increase = 2;
         this.maxHP_increase = 5;

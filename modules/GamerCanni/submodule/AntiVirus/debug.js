@@ -12,7 +12,8 @@ const rl = readline.createInterface({
 AntiVirus.debug(true);
 AntiVirus.start();
 
-msg = {"author":{"id":12345678}};
+//type != "dm"
+msg = {"author":{"id":12345678}, "channel":{"id":12345, "type":"text"}};
 
 function rec() {
     rl.question("-->", (answer => {

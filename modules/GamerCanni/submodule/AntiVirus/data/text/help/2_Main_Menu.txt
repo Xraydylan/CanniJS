@@ -24,5 +24,16 @@ Scan for enemies and engage in battle.
 grind/gr
 Scan for weaker enemies. (You won't gain experience.)
 
+multi scan/msc
+Start a multi player battle.
+
+multi grind/mgr
+Start a multi player battle.
+(You won't gain experience. The enemies won´t be weaker.)
+
 help/h
 View help.
+
+Generally keep in mind that you can go back to the main menu from the other menus (help, use points, inventory, shop, equipment) with the
+back/b
+command.

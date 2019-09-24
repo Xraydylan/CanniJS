@@ -10,6 +10,7 @@ const Enemy = require('./classes/enemy');
 const Weapon = require('./classes/weapon');
 const Item = require('./classes/item');
 const Battle_PvE = require('./classes/battle_pve');
+const Battle_PvE_Multi = require('./classes/battle_pve_multi');
 const Shop = require('./classes/shop');
 const Spawn = require('./classes/spawn');
 const Help = require('./classes/help');
@@ -32,8 +33,11 @@ AV.signup_on = {};
 AV.signup_state = {};
 AV.signup_name = {};
 
+AV.multi_games = {};
+
 AV.spawn;
 AV.help;
+AV.save;
 
 AV.debug_on = false;
 AV.dev = true;
@@ -49,7 +53,7 @@ module.exports = class AntiVirus {
         } else {
             AV.av_path = Application.config.rootDir + "/modules/GamerCanni/submodule/AntiVirus";
         }
-
+        AV.save = AntiVirus.save_players;
         this.load();
     }
 
@@ -103,6 +107,10 @@ module.exports = class AntiVirus {
                 this.scan_for_enemy(msg,p,true);
             } else if (this.input_is_list(input,["help","h"])) {
                 this.help_start(msg,p);
+            } else if (this.input_is_list(input,["multi scan","msc"])) {
+                this.multi_start(msg,p);
+            } else if (this.input_is_list(input,["multi grind","mgr"])) {
+                this.multi_start(msg,p, true);
             }
 
 
@@ -275,6 +283,7 @@ module.exports = class AntiVirus {
             p_simple.cc = player.cc;
             p_simple.inventory = player.inventory;
             p_simple.weapon_inventory = player.weapon_inventory;
+            p_simple.stat_points = player.stat_points;
             p_list.push(p_simple);
         });
         return p_list;
@@ -304,17 +313,6 @@ module.exports = class AntiVirus {
             }
         });
         return player;
-    }
-
-    //obsolete
-    static get_item_by_id(id) {
-        let item = undefined;
-        AV.items.forEach(i => {
-            if (i.id === parseInt(id)) {
-                item = i;
-            }
-        });
-        return item;
     }
 
     static input_includes(input, text) {
@@ -415,6 +413,14 @@ module.exports = class AntiVirus {
     static battle_manager(msg, input, p) {
         input = input.toLocaleLowerCase();
         let battle = p.battle;
+        if (battle.subtype === "pve-single") {
+            this.battle_manager_single(msg, input, p, battle);
+        } else if (battle.subtype === "pve-multi") {
+            this.battle_manager_multi(msg, input, p, battle);
+        }
+    }
+
+    static battle_manager_single(msg, input, p, battle) {
         if (battle.player.charge_on) {
             if (this.input_is_list(input, ["charge","ch"])) {
                 this.sender(msg, battle.do_round("C"));
@@ -437,19 +443,93 @@ module.exports = class AntiVirus {
             } else if (this.input_is_list(input, ["data","d"])) {
                 this.sender(msg, battle.data());
             }
+
+            if (!p.battle) {
+                this.save_players();
+            }
+        }
+    }
+
+    static battle_manager_multi(msg, input, p, battle) {
+        let pre,num;
+        if (battle.phase === 0) {
+            if (this.input_is_list(input, ["start","s"])) {
+                battle.phase = 1;
+                this.sender(msg, Tools.parseReply(AV.config.multi_confirm_start));
+            } else if (this.input_is_list(input, ["cancel","c"])) {
+                this.sender(msg, battle.remove_player(p));
+            }
+        } else if (battle.phase === 1) {
+            if (this.input_is_list(input, ["yes","y"])) {
+                battle.phase = 2;
+                this.sender(msg, battle.start_battle());
+            } else if (this.input_is_list(input, ["no","n"])) {
+                battle.phase = 1;
+            }
+        } else if (battle.phase === 2) {
+            pre = input.split(" ");
+            if (p.battle_item_on) {
+                if (p.item_target_finder_on) {
+                    this.battle_item_target_multi(msg, input, battle, p);
+                } else {
+                    this.battle_item_manager(msg, input, battle, p);
+                }
+            } else {
+                if (pre.length >= 2) {
+                    num = parseInt(pre[1]);
+                    if (num) {
+                        if (num <= battle.enemies_count) {
+                            num -= 1;
+                            if (p.charge_on) {
+                                if (this.input_is_list(pre[0], ["release","re"])) {
+                                    this.sender(msg, battle.attack_logger(p,"R", num));
+                                }
+                            } else {
+                                if (this.input_is_list(pre[0], ["strike","st"])) {
+                                    this.sender(msg, battle.attack_logger(p,"S", num));
+                                } else if (this.input_includes_list(input, ["brute force","br"])) {
+                                    this.sender(msg, battle.attack_logger(p,"B", num));
+                                } else if (this.input_is_list(pre[0], ["disrupt","dis"])) {
+                                    this.sender(msg, battle.attack_logger(p,"D", num));
+                                }  else if (this.input_is_list(pre[0], ["data","d"])) {
+                                    this.sender(msg, battle.data(p, num));
+                                }
+                            }
+                        }
+                    }
+                }
+                if (this.input_is_list(pre[0], ["charge","ch"])) {
+                    this.sender(msg, battle.attack_logger(p,"C"));
+                } else if (this.input_is_list(pre[0], ["item","i"])) {
+                    this.battle_item_use_start(msg, battle, p);
+                }
+
+                if (!p.battle) {
+                    this.save_players();
+                }
+            }
         }
     }
 
 
     static battle_item_use_start(msg, battle, p) {
         let message = "";
-        if (p.items_battle_count === 0) {
-            message += p.selector_battle;
+        if (p.state === "alive") {
+            if (p.attack_is_logged) {
+                message += Tools.parseReply(AV.config.multi_attack_already_selected, [p.name]);
+            } else {
+                if (p.items_battle_count === 0) {
+                    message += p.selector_battle;
+                } else {
+                    p.battle_item_on = true;
+                    message += Tools.parseReply(AV.config.startbattle_item);
+                    message += p.selector_battle;
+                }
+            }
         } else {
-            p.battle_item_on = true;
-            message += Tools.parseReply(AV.config.startbattle_item);
-            message += p.selector_battle;
+            message += Tools.parseReply(AV.config.multi_defeated_can_not_attack, [p.name]);
         }
+
         this.sender(msg, message);
     }
 
@@ -457,12 +537,37 @@ module.exports = class AntiVirus {
         let num = parseInt(input);
         if (num) {
             if (num <= p.items_battle_count) {
-                this.sender(msg, battle.do_round("I", num - 1));
-                p.battle_item_on = false;
+                if (battle.subtype === "pve-single") {
+                    this.sender(msg, battle.do_round("I", num - 1));
+                    p.battle_item_on = false;
+                } else if (battle.subtype === "pve-multi") {
+                    this.sender(msg, battle.select_item(p, num - 1));
+                }
             }
         } else {
             if (this.input_is_list(input, ["back","b"])) {
                 p.battle_item_on = false;
+                this.sender(msg, Tools.parseReply(AV.config.battle_choose_move,[p.name]))
+            } else {
+                this.sender(msg, Tools.parseReply(AV.config.battle_item_invalid, [p.name]))
+            }
+        }
+    }
+
+    static battle_item_target_multi(msg, input, battle, p) {
+        let num = parseInt(input);
+        if (num) {
+            if (battle.item_target_resolve(p, num)) {
+                this.sender(msg, battle.attack_logger(p,"I"));
+                p.battle_item_on = false;
+                p.selected_battle_item = undefined;
+                p.item_target_finder_on = false;
+            }
+        } else {
+            if (this.input_is_list(input, ["back","b"])) {
+                p.battle_item_on = false;
+                p.selected_battle_item = undefined;
+                p.item_target_finder_on = false;
                 this.sender(msg, Tools.parseReply(AV.config.battle_choose_move,[p.name]))
             } else {
                 this.sender(msg, Tools.parseReply(AV.config.battle_item_invalid, [p.name]))
@@ -493,14 +598,17 @@ module.exports = class AntiVirus {
         if (this.input_is_list(input, ["attack","atk"])) {
             p.atk += 1;
             p.stat_points -= 1;
+            this.save_players();
             message += Tools.parseReply(AV.config.increase_atk)
         } else if (this.input_is_list(input, ["defense","def"])) {
             p.def += 1;
             p.stat_points -= 1;
+            this.save_players();
             message += Tools.parseReply(AV.config.increase_def)
         } else if (this.input_is_list(input, ["initiative","init"])) {
             p.ini += 1;
             p.stat_points -= 1;
+            this.save_players();
             message += Tools.parseReply(AV.config.increase_ini)
         } else if (this.input_is_list(input, ["back","b"])) {
             p.stat_select_on = false;
@@ -558,6 +666,7 @@ module.exports = class AntiVirus {
                         item = p.inventory[num - 1];
                         if (item.types.includes("usable-item")) {
                             message += item.use([p], false);
+                            this.save_players();
                         } else {
                             message += Tools.parseReply(AV.config.inventory_not_usable, [item.name]);
                         }
@@ -654,6 +763,7 @@ module.exports = class AntiVirus {
                                     p.cc -= item.value;
                                     p.add_item(item.id);
                                     amount = p.inventory_get_item(item.id).number;
+                                    this.save_players();
                                     message += Tools.parseReply(AV.config.shop_bought_item,[item.name, amount])
                                 } else {
                                     message += Tools.parseReply(AV.config.shop_no_enough_cc_item,[item.name])
@@ -706,6 +816,7 @@ module.exports = class AntiVirus {
                                     if (p.cc >= weapon.value) {
                                         p.cc -= weapon.value;
                                         p.add_weapon(weapon.id);
+                                        this.save_players();
                                         message += Tools.parseReply(AV.config.shop_bought_weapon,[weapon.name]);
                                     } else {
                                         message += Tools.parseReply(AV.config.shop_no_enough_cc_item,[weapon.name]);
@@ -780,6 +891,7 @@ module.exports = class AntiVirus {
                         } else {
                             p.weapon = weapon;
                             p.weapon_selector();
+                            this.save_players();
                             message += Tools.parseReply(AV.config.startequip);
                             message += p.selector_weapon;
                         }
@@ -792,6 +904,7 @@ module.exports = class AntiVirus {
             p.equip_on = false;
         }
     }
+
 
     static help_start(msg,p) {
         let message = "";
@@ -815,6 +928,40 @@ module.exports = class AntiVirus {
         }
         if (this.input_is_list(input, ["back","b"])) {
             p.help_on = false;
+        }
+    }
+
+    static multi_start(msg, p, grind = false) {
+        let multi, message, enemy;
+        if (msg.channel.type === "dm") {
+            this.senderDM(msg,Tools.parseReply(AV.config.multi_dm_channel));
+        } else {
+            message = "";
+            multi = AV.multi_games[msg.channel.id];
+            if (multi){
+                if (multi.grind === grind) {
+                    if (multi.phase) {
+                        message = Tools.parseReply(AV.config.multi_join_not_possible, [p.name]);
+                    } else {
+                        if (p.battle) {
+                            message = Tools.parseReply(AV.config.multi_already_in_battle, [p.name]);
+                        } else {
+                            [message, enemy] = AV.spawn.spawn(msg, p);
+                            message = multi.new_player(p,enemy);
+                            p.battle = multi;
+                        }
+                    }
+                } else {
+                    message = Tools.parseReply(AV.config.multi_already_different_type, [p.name]);
+                }
+            } else {
+                [message, enemy] = AV.spawn.spawn(msg, p);
+                multi = new Battle_PvE_Multi(p, enemy, msg.channel.id, grind);
+                AV.multi_games[msg.channel.id] = multi;
+                p.battle = multi;
+                message = Tools.parseReply(AV.config.multi_start_player_search, [p.name]);
+            }
+            this.sender(msg,message);
         }
     }
 

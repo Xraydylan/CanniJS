@@ -5,8 +5,6 @@ const fs = require('fs');
 const AV = require('../antiVirus');
 const Player = require('./player');
 const Item = require('./item');
-const Enemy = require('./enemy');
-const Battle_PvE = require('./battle_pve');
 const Weapon = require('./weapon');
 
 module.exports = class Shop {

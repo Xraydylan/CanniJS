@@ -1,0 +1,28 @@
+Multi Player Battle
+To setup a multi player battle you have to use the command
+multi scan/msc
+
+Now any number of other players can join the multi player battle by typing the same command.
+
+A player can leave the multi player battle with the command
+cancel/c
+
+Once enough players gathered together, any player can use the start/s command to try and start the multi player battle.
+You will be asked to confirm the start.
+
+Now per player a monster according to the players strength will be spawned.
+The general battle mechanics remain the same as those in the single player battle.
+
+Except you have to specify a target for the attacks strike, brute force, disrupt and the moves release and data.
+You do this by writing the the respective number of the enemy after the attack.
+(Example: strike 1)
+
+When using an item the same exception applies in a similar way.
+Choose an item by writing the respective number. Then you will be asked for a target.
+
+The round will be executed after every alive player choose a move.
+
+If you are successful and win the generated loot will be equally distributed.
+In multi player battles there is a bonus per player added in the generated loot.
+
+(The same mechanics apply for the multi grind command.)
