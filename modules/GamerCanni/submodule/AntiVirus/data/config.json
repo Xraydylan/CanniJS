@@ -9,7 +9,7 @@
 
   "displayStats": "AVS Account:\nName: %s\nLevel: %s\nExp: %s/%s\nCanni Coins: %s\n\nHP: %s\nAttack: %s\nDefense: %s\nInitiative: %s\n\nWeapon: %s\nLevel: %s\nDirect Damage: %s\nHit Damage: %s",
 
-  "startcombat": "An enemy appeared!\nYour Enemy is: %s\nFirst Round.\n(Strike, Brute force, Charge, Disrupt, Item, Data)",
+  "startcombat": "An enemy appeared!\n\nYour Enemy is:\n%s    LV: %s    HP: %s\n\nFirst Round.\n(Strike, Brute force, Charge, Disrupt, Item, Data)",
   "battle_choose_move": "%s, what will you do?\n(Strike, Brute force, Charge, Disrupt, Item, Data)",
 
   "player_strike_message": "%s, your **Strike** attack hits %s for %s damage.\n%s now has %s HP.\n",
@@ -58,15 +58,21 @@
 
   "use_item": "\n%s used %s.\n",
 
-  "heal_player_full": "Your HP was fully restored.\n",
-  "heal_player_part": "HP was restored by %s. HP is now: %s.\n",
-  "heal_player_complete": "HP was fully restored. HP is now: %s.\n",
+  "heal_player_full": "%s, your HP was fully restored.\n",
+  "heal_player_part": "%s, your HP was restored by %s. HP is now: %s.\n",
+  "heal_player_complete": "%s, your HP was fully restored. HP is now: %s.\n",
   "heal_enemy_full": "HP was fully restored.\n",
   "heal_enemy_part": "HP was restored by %s. HP is now: %s.\n",
   "heal_enemy_complete": "HP was fully restored. HP is now: %s.\n",
 
   "item_damage_enemy": "%s was hit for %s damage and now has %s HP.\n",
   "item_damage_player": "%s was hit for %s damage and now has %s HP.\n",
+
+  "revive_target_alive" : "%s, the target for %s is already alive... The item has no effect...",
+  "rivive_player_full" : "%s has been revived and HP were fully restored.",
+  "revive_player_part" : "%s has been revived and HP were restored to %s HP.",
+  "rivive_enemy_full" : "%s has been revived and HP were fully restored.",
+  "revive_enemy_part" : "%s has been revived and HP were restored to %s HP.",
 
   "startbattle_item": "Select an item:\n",
   "selector_no_items": "%s, you don't have any items your inventory.",

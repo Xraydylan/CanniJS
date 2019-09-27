@@ -273,9 +273,9 @@ module.exports = class AntiVirus {
             p_simple.name = player.name;
             p_simple.id = player.id;
             p_simple.lv = player.lv;
-            p_simple.atk = player.atk;
-            p_simple.def = player.def;
-            p_simple.ini = player.ini;
+            p_simple.atk_base = player.atk_base;
+            p_simple.def_base = player.def_base;
+            p_simple.ini_base = player.ini_base;
             p_simple.maxHP = player.maxHP;
             p_simple.state = player.state;
             p_simple.weapon = player.weapon;
@@ -386,9 +386,9 @@ module.exports = class AntiVirus {
     }
 
     static displayStats(msg, p) {
-    let content = p.stats();
-    this.sender(msg, content);
-}
+        let content = p.stats();
+        this.sender(msg, content);
+    }
 
     static displayInfo(msg,p) {
         let content = p.info();
@@ -596,17 +596,17 @@ module.exports = class AntiVirus {
     static point_manager(msg, input, p) {
         let message = "";
         if (this.input_is_list(input, ["attack","atk"])) {
-            p.atk += 1;
+            p.atk_base += 1;
             p.stat_points -= 1;
             this.save_players();
             message += Tools.parseReply(AV.config.increase_atk)
         } else if (this.input_is_list(input, ["defense","def"])) {
-            p.def += 1;
+            p.def_base += 1;
             p.stat_points -= 1;
             this.save_players();
             message += Tools.parseReply(AV.config.increase_def)
         } else if (this.input_is_list(input, ["initiative","init"])) {
-            p.ini += 1;
+            p.ini_base += 1;
             p.stat_points -= 1;
             this.save_players();
             message += Tools.parseReply(AV.config.increase_ini)

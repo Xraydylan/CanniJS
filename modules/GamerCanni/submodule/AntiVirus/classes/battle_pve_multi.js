@@ -17,7 +17,6 @@ module.exports = class Battle_PvE_Multi{
         } else {
             this.setup_players([players]);
             this.setup_enemies([enemies]);
-
         }
         this.assign_target(enemies, players);
         this.grind = grind;
@@ -25,6 +24,7 @@ module.exports = class Battle_PvE_Multi{
         this.subtype = "pve-multi";
 
         this.phase = 0;
+        this.total_rounds = 0;
         this.defeated_players = [];
         this.defeated_enemies = [];
         this.loot_bonus = 0.4;
@@ -60,7 +60,8 @@ module.exports = class Battle_PvE_Multi{
         player.charge_count = 0;
         player.battle_item_on = false;
         player.item_target_finder_on = false;
-        this.selected_battle_item = undefined;
+        player.alive_rounds = 0;
+        player.selected_battle_item = undefined;
         player.item_selector();
         this.players.push(player);
     }
@@ -133,10 +134,10 @@ module.exports = class Battle_PvE_Multi{
             } else {
                 player.attack_is_logged = true;
                 this.attack_count -= 1;
-                if (p_attack !== "I" && p_attack !== "C") {
-                    player.target = this.enemies[tar_num];
-                }
+
                 player.battle_attack = Battle_PvE_Multi.get_attack_from_char(p_attack);
+                this.player_target_assignment(player, p_attack, tar_num);
+
                 this.message += Tools.parseReply(AV.config.multi_attack_lock, [player.name]);
                 if (this.attack_count <= 0) {
                     this.execute_round();
@@ -150,10 +151,22 @@ module.exports = class Battle_PvE_Multi{
         return tmp;
     }
 
+    player_target_assignment(player, p_attack,tar_num) {
+        if (p_attack !== "I" && p_attack !== "C") {
+            player.target = this.enemies[tar_num];
+        } else {
+            player.target = {"state":"alive"}
+        }
+    }
+
     execute_round() {
         let order;
         this.update_attacks_enemies();
-        order = this.get_battle_order();
+
+        let entities = this.players.concat(this.enemies);
+
+        this.apply_modifiers(entities);
+        order = this.get_battle_order(entities);
 
         order.forEach(entity => {
             if (entity.state === "alive") {
@@ -164,8 +177,11 @@ module.exports = class Battle_PvE_Multi{
             }
         });
 
+        this.find_defeated_players();
         this.update_players_state();
         this.update_enemies_state();
+
+        this.total_rounds += 1;
 
         if (!this.check_win()) {
             this.enemy_selector();
@@ -177,39 +193,27 @@ module.exports = class Battle_PvE_Multi{
         }
     }
 
-    get_battle_order() {
-        let entities = this.players.concat(this.enemies);
-        return this.organizer(entities);
+    get_battle_order(entities) {
+        let fighters, item_users;
+        [fighters, item_users] = this.filter_fighters_item_users(entities);
+        item_users = Tools.sort_with_ramdonise(item_users, Battle_PvE_Multi.compare_init);
+        fighters = Tools.sort_with_ramdonise(fighters, Battle_PvE_Multi.compare_init);
+        return item_users.concat(fighters);
     }
 
-    organizer(entities) {
-        let num, order;
-        let pre_order = [];
-        let residue = [];
-        let count = "n";
+    filter_fighters_item_users(entities) {
+        let fighters = [];
+        let item_users = [];
+
         entities.forEach(entity => {
-            num = entity.ini + this.pre_order_modifiers(entity);
-            if (count === "n") {
-                pre_order.push(entity);
-                count = num;
+            if (entity.battle_attack === "item") {
+                item_users.push(entity);
             } else {
-                if (num === count) {
-                    pre_order.push(entity);
-                } else if (num > count) {
-                    residue = residue.concat(pre_order);
-                    pre_order = [entity];
-                    count = num;
-                } else {
-                    residue.push(entity);
-                }
+                fighters.push(entity);
             }
         });
-        order = Tools.shuffle(pre_order);
-        if (residue.length === 0) {
-            return order
-        } else {
-            return order.concat(this.organizer(residue));
-        }
+
+        return [fighters, item_users];
     }
 
     check_win() {
@@ -219,9 +223,9 @@ module.exports = class Battle_PvE_Multi{
             this.message += Tools.parseReply(AV.config.multi_won);
             this.all_players.forEach(player => {
                 if (!this.grind) {
-                    this.message += player.gain_exp(experience);
+                    this.message += player.gain_exp(this.individual_exp(player, experience));
                 }
-                this.message += player.gain_cc(cc);
+                this.message += player.gain_cc(this.individual_cc(player, cc));
             });
             this.end_battle_player_reset();
             return true;
@@ -246,11 +250,21 @@ module.exports = class Battle_PvE_Multi{
             experience = 0;
         } else {
             experience += Math.ceil(experience*this.loot_bonus*(this.all_players.length-1));
-            cc = Math.ceil(experience/this.all_players.length);
+            experience = Math.ceil(experience/this.all_players.length);
         }
+
         cc += Math.ceil(cc*this.loot_bonus*(this.all_players.length-1));
         cc = Math.ceil(cc/this.all_players.length);
+
         return [cc,experience];
+    }
+
+    individual_cc(p,cc) {
+        return Math.ceil(cc * (p.alive_rounds/this.total_rounds));
+    }
+
+    individual_exp(p,experience) {
+        return Math.ceil(experience * (p.alive_rounds/this.total_rounds));
     }
 
     end_battle_player_reset() {
@@ -259,12 +273,22 @@ module.exports = class Battle_PvE_Multi{
             player.battle_on = false;
             player.battle = undefined;
             player.battle_id = undefined;
-            player.curHP = player.maxHP;
             player.charge_on = false;
             player.charge_count = 0;
             player.battle_item_on = false;
+            player.state = "alive";
+            player.curHP = player.maxHP;
+            player.set_to_base();
         });
         AV.multi_games[this.battle_id] = undefined;
+    }
+
+    find_defeated_players() {
+        this.players.forEach(p => {
+            if (p.state === "defeated") {
+                this.message += Tools.parseReply(AV.config.player_defeat, [p.name]);
+            }
+        });
     }
 
     update_players_state() {
@@ -272,6 +296,7 @@ module.exports = class Battle_PvE_Multi{
         let defeated = [];
         this.all_players.forEach(p => {
             if (p.state === "alive") {
+                p.alive_rounds += 1;
                 alive.push(p);
             } else {
                 defeated.push(p);
@@ -308,7 +333,6 @@ module.exports = class Battle_PvE_Multi{
     }
 
     update_attacks_enemies() {
-        let target;
         this.enemies.forEach(enemy => {
             enemy.battle_attack = enemy.get_next_attack();
         });
@@ -319,27 +343,37 @@ module.exports = class Battle_PvE_Multi{
         this.attack_log_setter(false);
     }
 
-    pre_order_modifiers(entity) {
+    apply_modifiers(entities) {
+        entities.forEach(entity => {
+            this.modifiers(entity);
+        });
+    }
+
+    modifiers(entity) {
         switch (entity.battle_attack) {
             case "disrupt": {
-                return entity.lv;
+                entity.ini += 1;
+                break;
             }
             case "brute": {
-                return -1 * entity.lv;
+                entity.ini -= 1;
+                break;
+            }
+            case "strike": {
+                entity.def_bonus = true;
+                break;
             }
             default : {
-                return 0;
+                break;
             }
         }
-    };
+    }
 
     attack_processor(attacker, defender) {
-        attacker.def_bonus = false;
         if (defender.state === "alive") {
             switch (attacker.battle_attack) {
                 case "strike":{
                     this.strike(attacker, defender);
-                    attacker.def_bonus = true;
                     break;
                 }
                 case "brute":{
@@ -359,7 +393,7 @@ module.exports = class Battle_PvE_Multi{
                     break;
                 }
                 case "item" : {
-                    this.item_use(attacker, defender);
+                    this.item_use(attacker);
                     break;
                 }
                 default : {
@@ -369,13 +403,13 @@ module.exports = class Battle_PvE_Multi{
         } else {
             //Currently no reanimation item            V
             if (attacker.battle_attack === "item" && false) {
-                this.item_use(attacker, defender);
+                this.item_use(attacker);
+            } else if (attacker.battle_attack === "charge") {
+                this.charge(attacker);
             } else {
                 this.defeated_target(attacker, defender);
             }
         }
-
-
     }
 
     defeat_check(attacker, defender) {
@@ -463,12 +497,12 @@ module.exports = class Battle_PvE_Multi{
         switch (attacker.type) {
             case "player": {
                 p = Tools.getRandomIntFromInterval(0, attacker.weapon.atk_P);
-                dam = (attacker.atk - attacker.lv) + attacker.weapon.atk + p;
+                dam = (attacker.atk - attacker.lv + attacker.ini - 1) + attacker.weapon.atk + p;
                 break;
             }
             case "enemy" : {
                 p = Tools.getRandomIntFromInterval(0, attacker.atk_P);
-                dam = (attacker.atk - attacker.lv) + p;
+                dam = (attacker.atk - attacker.lv + attacker.ini - 1) + p;
                 break;
             }
             default : {
@@ -493,12 +527,16 @@ module.exports = class Battle_PvE_Multi{
 
     }
 
-    item_use(attacker, defender) {
+    item_use(attacker) {
         if (attacker.type === "player") {
             this.message += attacker.selected_battle_item.use([this, attacker]);
         } else if (attacker.type === "enemy") {
             if (attacker.items.length === 0) {
-                this.strike(attacker, defender);
+                if (attacker.target === "alive") {
+                    this.strike(attacker, attacker.target);
+                } else {
+                    this.defeated_target(attacker, attacker.target);
+                }
             } else {
                 this.message += attacker.items[Math.floor(Math.random()*attacker.items.length)].use([this, attacker]);
             }
@@ -695,6 +733,17 @@ module.exports = class Battle_PvE_Multi{
                 console.log("battle char match error!");
             }
         }
+    }
+
+    //higher first
+    static compare_init( a, b ) {
+        if ( a.ini > b.ini ){
+            return -1;
+        }
+        if ( a.ini < b.ini ){
+            return 1;
+        }
+        return 0;
     }
 
     get_enemy_from_player(player) {

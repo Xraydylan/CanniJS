@@ -15,9 +15,9 @@ module.exports = class Player {
         this.id = data.id;
         if (load) {
             this.lv = data.lv;
-            this.atk = data.atk;
-            this.def = data.def;
-            this.ini = data.ini;
+            this.atk_base  = data.atk_base ;
+            this.def_base  = data.def_base ;
+            this.ini_base  = data.ini_base ;
             this.maxHP = data.maxHP;
             this.state = data.state;
             this.weapon = new Weapon(true, data.weapon);
@@ -28,9 +28,9 @@ module.exports = class Player {
             this.loadWeapon_Inventory(data.weapon_inventory)
         } else {
             this.lv = 1;
-            this.atk = 1;
-            this.def = 1;
-            this.ini = 2;
+            this.atk_base = 1;
+            this.def_base = 1;
+            this.ini_base = 2;
             this.maxHP = 10;
             this.state = "alive";
             let random = Tools.getRandomIntFromInterval(0, AV.starter_weapons.length - 1);
@@ -53,6 +53,7 @@ module.exports = class Player {
         this.attack_is_logged = false;
 
         this.selected_battle_item = undefined;
+        this.alive_rounds = 0;
         this.item_target_finder_on = false;
 
         this.stat_select_on = false;
@@ -68,9 +69,16 @@ module.exports = class Player {
         this.equip_on = false;
         this.help_on = false;
 
+        this.set_to_base();
         this.get_shops();
         this.item_selector();
         this.weapon_selector();
+    }
+
+    set_to_base() {
+        this.atk = this.atk_base ;
+        this.def = this.def_base;
+        this.ini = this.ini_base;
     }
 
     get_shops() {
@@ -117,7 +125,7 @@ module.exports = class Player {
     }
 
     stats() {
-        return Tools.parseReply(AV.config.displayStats, [this.name,this.lv,this.experiance, this.levelup_function(),this.cc,this.maxHP,this.atk,this.def,this.ini,this.weapon.name,this.weapon.lv,this.weapon.atk,this.weapon.atk_P]);
+        return Tools.parseReply(AV.config.displayStats, [this.name,this.lv,this.experiance, this.levelup_function(),this.cc,this.maxHP,this.atk_base,this.def_base,this.ini_base,this.weapon.name,this.weapon.lv,this.weapon.atk,this.weapon.atk_P]);
     }
 
     info() {
@@ -131,19 +139,34 @@ module.exports = class Player {
     }
 
     receive_damage(dam) {
-        let net, bon;
-        if (this.def_bonus) {
-            bon = Math.ceil(this.def * this.def_bonus_val)
-        } else {
-            bon = 0;
-        }
-        net = dam - (this.def + bon);
+        let net, bon, dam_multi;
+        bon = this.get_def_bonus();
+        dam_multi = this.get_dam_multiplicator();
+
+        net = Math.round(dam * dam_multi - (this.def + bon));
         if (net > 0) {
             this.curHP = this.curHP - net;
             return [net, this.curHP]
         } else {
             return [0, this.curHP]
         }
+    }
+
+    get_def_bonus() {
+        if (this.def_bonus) {
+            return Math.ceil(this.def * this.def_bonus_val);
+        } else {
+            return 0;
+        }
+    }
+
+    get_dam_multiplicator() {
+        let base;
+        base = 1;
+        if (this.ini <= 0) {
+            base += -0.2 * this.ini + 0.3;
+        }
+        return base;
     }
 
     defeated_message(enemy) {
@@ -195,15 +218,28 @@ module.exports = class Player {
         let message = "";
         if (full) {
             this.curHP = this.maxHP;
-            message += Tools.parseReply(AV.config.heal_player_full)
+            message += Tools.parseReply(AV.config.heal_player_full, [this.name])
         } else {
             if (amount + this.curHP < this.maxHP) {
                 this.curHP += amount;
-                message += Tools.parseReply(AV.config.heal_player_part, [amount, this.curHP])
+                message += Tools.parseReply(AV.config.heal_player_part, [this.name, amount, this.curHP])
             } else {
                 this.curHP = this.maxHP;
-                message += Tools.parseReply(AV.config.heal_player_complete, [this.curHP])
+                message += Tools.parseReply(AV.config.heal_player_complete, [this.name, this.curHP])
             }
+        }
+        return message;
+    }
+
+    revive(full = false, amount = 0) {
+        let message = "";
+        this.state = "alive";
+        this.curHP = 0;
+        this.heal(full, amount);
+        if (full) {
+            message += Tools.parseReply(AV.config.rivive_player_full, [this.name])
+        } else {
+            message += Tools.parseReply(AV.config.revive_player_part, [this.name, amount])
         }
         return message;
     }

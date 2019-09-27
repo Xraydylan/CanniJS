@@ -5,7 +5,7 @@ You can choose to attack, use an item, or compare your stats to the enemy's stat
 These are the 4 main attacks:
 
 strike/st:
-This is your regular attack, which grands you a defense bonus.
+The **Strike** attack is your regular attack, which grands you a defense bonus.
 
 
 brute force/br:
@@ -15,11 +15,12 @@ The **Brute force** attack is a stronger attack, but it decreases you initiative
 charge/ch:
 You can charge energy for a big attack that can be unleashed during a future turn.
 You can charge for as many turns as you please.
-After using the charge command you can only choose to continue charging or to unleash your charged attack.
+After using the charge command you can **only** choose to continue charging or to unleash your charged attack.
 
 
 release/re:
 Unleashes your **charge attack**.
+Note that when you used "release" and get disrupted, you will automatically do a strike attack instead.
 
 
 disrupt/dis:

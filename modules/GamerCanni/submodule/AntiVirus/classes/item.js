@@ -36,11 +36,13 @@ module.exports = class Item {
         let text = "";
         if (this.subtype === "heal") {
             text = Tools.parseReply(pre, [this.name, this.restoreHP])
+        } else if (this.subtype === "revive") {
+            text = Tools.parseReply(pre, [this.name, this.restoreHP])
         } else if (this.subtype === "damage") {
             text = Tools.parseReply(pre, [this.name, this.damage])
         } else if (this.subtype === "drain") {
             text = Tools.parseReply(pre, [this.name, this.damage, this.conversion])
-        }else if (this.subtype === "exp") {
+        } else if (this.subtype === "exp") {
             text = Tools.parseReply(pre, [this.name, this.experience + this.range])
         } else {
             text = "No Info Available";
@@ -112,6 +114,9 @@ module.exports = class Item {
         if (this.subtype === "drain") {
             message += this.apply_drain(battle, user, target);
         }
+        if (this.subtype === "revive") {
+            message += this.apply_revive(battle, user, target);
+        }
 
 
         this.consume(user);
@@ -163,6 +168,16 @@ module.exports = class Item {
         message += this.apply_damage(battle,user,target);
         this.restoreHP = Math.ceil(this.dealt_damage*this.conversion);
         message += this.heal(user);
+        return message;
+    }
+
+    apply_revive(battle, user, target) {
+        let message = "";
+        if (target.state = "alive") {
+            message += Tools.parseReply(AV.config.revive_target_alive, [user.name, this.name]);
+        } else {
+            message += target.revive(this.heal_full, this.restoreHP);
+        }
         return message;
     }
 

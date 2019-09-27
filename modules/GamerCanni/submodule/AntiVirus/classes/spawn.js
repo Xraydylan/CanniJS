@@ -49,7 +49,7 @@ module.exports = class Spawn {
         }
         [lim_down, lim_up] = this.determine_limits(p);
 
-        if (lim_down <= random) {
+        if (random <= lim_down) {
             lv -= 1;
             if (lv <= 0) {lv = 1;}
             enemies = this.enemies_lv_dict[lv];
@@ -70,22 +70,21 @@ module.exports = class Spawn {
     determine_limits(p, soft = 20, lim_down_max = 20,lim_up_max = 100,lim_up_min = 80) {
         let rat, lim_down, lim_up, x, m;
         rat = p.get_exp_ration();
-
-        if (rat > soft) {
+        if (rat < soft) {
             lim_down = lim_down_max;
             lim_up = lim_up_max;
         } else {
             x = (rat - soft);
             m = (lim_up_max - lim_up_min) / (100 - soft);
             lim_up = Math.ceil(lim_up_max - m * x);
-            lim_down = lim_down_max - lim_up;
+            lim_down = lim_down_max + lim_up - 100;
         }
         return [lim_down,lim_up];
     }
 
     spawn_message(msg, p, enemy) {
         let message = "";
-        message += Tools.parseReply(AV.config.startcombat,[enemy.name]);
+        message += Tools.parseReply(AV.config.startcombat,[enemy.name, enemy.lv, enemy.maxHP]);
         return message
     }
 };

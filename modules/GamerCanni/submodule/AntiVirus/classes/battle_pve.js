@@ -18,12 +18,17 @@ module.exports = class Battle_PvE{
 
         this.grind = grind;
 
+        enemy.target = player;
+        player.target = enemy;
+
         enemy.charge_on = false;
         player.charge_on = false;
         enemy.charge_count = 0;
         player.charge_count = 0;
         player.battle_item_on = false;
         player.item_selector();
+        player.set_to_base();
+        player.state = "alive";
 
         this.id = player.id;
         this.player = player;
@@ -36,29 +41,32 @@ module.exports = class Battle_PvE{
     }
 
     do_round(p_attack, num = 0) {
-        let first, second, p_init_mod, e_init_mod;
+        let order;
 
         this.message = "";
 
         this.update_attacks(p_attack);
 
-        p_init_mod = this.pre_order_modifiers(this.player);
-        e_init_mod = this.pre_order_modifiers(this.enemy);
+        this.modifiers(this.player);
+        this.modifiers(this.enemy);
 
+        order = this.get_battle_order();
 
-        [first,second] = this.battle_order(p_init_mod, e_init_mod);
-
-        this.attack_processor(first,second, num);
-        if (!this.defeat_check(first,second)) {
-            this.attack_processor(second,first, num);
-            this.defeat_check(second, first);
-        }
+        order.forEach(entity => {
+            if (entity.state === "alive") {
+                this.attack_processor(entity, entity.target);
+                if (this.defeat_check(entity, entity.target)) {
+                    entity.target.state = "defeated";
+                }
+            }
+        });
 
         if (this.end_battle) {
             this.player.curHP = this.player.maxHP;
             this.player.battle_on = false;
             this.player.battle_id = undefined;
             this.player.battle = undefined;
+            this.player.state = "alive";
         }
 
         return this.message;
@@ -69,27 +77,41 @@ module.exports = class Battle_PvE{
         this.enemy.battle_attack = this.enemy.get_next_attack();
     }
 
-    pre_order_modifiers(entity) {
+    modifiers(entity) {
+        entity.def_bonus = false;
         switch (entity.battle_attack) {
             case "disrupt": {
-                return entity.lv;
+                entity.ini += 1;
+                break;
             }
             case "brute": {
-                return -1 * entity.lv;
+                entity.ini -= 1;
+                break;
+            }
+            case "strike": {
+                entity.def_bonus = true;
+                break;
             }
             default : {
-                return 0;
+                break;
             }
         }
-    };
+    }
+
+    get_battle_order() {
+        if (this.player.battle_attack === "item" && this.enemy.battle_attack !== "item") {
+            return [this.player,this.enemy];
+        } else if (this.player.battle_attack !== "item" && this.enemy.battle_attack === "item") {
+            return [this.enemy,this.player];
+        }
+        return Tools.sort_with_ramdonise([this.player,this.enemy], Battle_PvE.compare_init);
+    }
 
     attack_processor(attacker, defender, num) {
 
-        attacker.def_bonus = false;
         switch (attacker.battle_attack) {
             case "strike":{
                 this.strike(attacker, defender);
-                attacker.def_bonus = true;
                 break;
             }
             case "brute":{
@@ -210,12 +232,12 @@ module.exports = class Battle_PvE{
         switch (attacker.type) {
             case "player": {
                 p = Tools.getRandomIntFromInterval(0, attacker.weapon.atk_P);
-                dam = (attacker.atk - attacker.lv) + attacker.weapon.atk + p;
+                dam = (attacker.atk - attacker.lv + attacker.ini - 1) + attacker.weapon.atk + p;
                 break;
             }
             case "enemy" : {
                 p = Tools.getRandomIntFromInterval(0, attacker.atk_P);
-                dam = (attacker.atk - attacker.lv) + p;
+                dam = (attacker.atk - attacker.lv + attacker.ini- 1) + p;
                 break;
             }
             default : {
@@ -379,28 +401,6 @@ module.exports = class Battle_PvE{
         return dam;
     }
 
-    battle_order(p_mod = 0, e_mod = 0) {
-
-        if (this.player.battle_attack === "item" && this.enemy.battle_attack !== "item") {
-            return [this.player,this.enemy];
-        } else if (this.player.battle_attack !== "item" && this.enemy.battle_attack === "item") {
-            return [this.enemy,this.player];
-        }
-        if ((this.player.ini + p_mod) > (this.enemy.ini + e_mod)) {
-            return [this.player, this.enemy];
-        } else if ((this.player.ini + p_mod) < (this.enemy.ini + e_mod)) {
-            return [this.enemy, this.player]
-        } else if ((this.player.ini + p_mod) === (this.enemy.ini + e_mod)) {
-            let ran = Tools.getRandomIntFromInterval(0,1);
-            if (ran) {
-                return [this.player, this.enemy];
-            } else {
-                return [this.enemy, this.player]
-            }
-        }
-        console.log("battle order error!");
-    }
-
     static get_attack_from_char(char) {
         switch (char) {
             case "S" : {
@@ -427,6 +427,17 @@ module.exports = class Battle_PvE{
         }
     }
 
+    //higher first
+    static compare_init( a, b ) {
+        if ( a.ini > b.ini ){
+            return -1;
+        }
+        if ( a.ini < b.ini ){
+            return 1;
+        }
+        return 0;
+    }
+
     data() {
         let message = "";
 
@@ -441,8 +452,8 @@ module.exports = class Battle_PvE{
         let message = "";
         message += this.data_stats_generate("Level", this.player.lv, this.enemy.lv);
         message += this.data_stats_generate("Initiative", this.player.ini, this.enemy.ini);
-        message += this.data_stats_generate("Direct Attack", this.player.atk + this.player.weapon.atk, this.enemy.atk);
-        message += this.data_stats_generate("Hit Attack", this.player.weapon.atk_P, this.enemy.atk_P);
+        message += this.data_stats_generate("Direct Damage", this.player.atk + this.player.weapon.atk, this.enemy.atk);
+        message += this.data_stats_generate("Hit Damage", this.player.weapon.atk_P, this.enemy.atk_P);
         message += this.data_stats_generate("Defense", this.player.def, this.enemy.def);
 
         return message;

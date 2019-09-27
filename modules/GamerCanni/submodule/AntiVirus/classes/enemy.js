@@ -16,10 +16,12 @@ module.exports = class Enemy {
             this.subtype = data.type;
             this.lv = data.lv;
             this.maxHP = data.maxHP;
-            this.atk = data.atk;
+            this.atk_base = data.atk_base;
             this.atk_P = data.atk_P;
-            this.def = data.def;
-            this.ini = data.ini;
+            this.def_base = data.def_base;
+            this.ini_base = data.ini_base;
+            this.exp_gain = data.exp_gain;
+            this.cc_gain = data.cc_gain;
 
             if (data.autolv) {
                 this.auto_leveler(data.autolv_data);
@@ -29,10 +31,6 @@ module.exports = class Enemy {
                 this.loaditems(data.items);
             }
 
-
-            this.exp_gain = data.exp_gain;
-            this.cc_gain = data.cc_gain;
-
             this.attack_patterns = data.attack_patterns;
         } else {
             this.name = data.name;
@@ -40,10 +38,10 @@ module.exports = class Enemy {
             this.subtype = data.subtype;
             this.lv = data.lv;
             this.maxHP = data.maxHP;
-            this.atk = data.atk;
+            this.atk_base = data.atk_base;
             this.atk_P = data.atk_P;
-            this.def = data.def;
-            this.ini = data.ini;
+            this.def_base = data.def_base;
+            this.ini_base = data.ini_base;
             this.exp_gain = data.exp_gain;
             this.cc_gain = data.cc_gain;
             this.items = data.items;
@@ -61,6 +59,13 @@ module.exports = class Enemy {
 
         this.target = undefined;
         this.state = "alive";
+        this.set_to_base();
+    }
+
+    set_to_base() {
+        this.atk = this.atk_base ;
+        this.def = this.def_base;
+        this.ini = this.ini_base;
     }
 
     loaditems(list) {
@@ -76,10 +81,10 @@ module.exports = class Enemy {
     auto_leveler(auto) {
         let mod = this.lv - 1;
         this.maxHP += Math.floor(auto.hp * mod);
-        this.atk += Math.floor(auto.atk * mod);
+        this.atk_base += Math.floor(auto.atk * mod);
         this.atk_P += Math.floor(auto.atk_P * mod);
-        this.def += Math.floor(auto.def * mod);
-        this.ini += Math.floor(auto.ini * mod);
+        this.def_base += Math.floor(auto.def * mod);
+        this.ini_base += Math.floor(auto.ini * mod);
 
         this.exp_gain += Math.floor(auto.experience * mod) + auto.experience_add;
         this.cc_gain += Math.floor(auto.cc * mod) + auto.cc_add;
@@ -176,19 +181,34 @@ module.exports = class Enemy {
 
 
     receive_damage(dam) {
-        let net, bon;
-        if (this.def_bonus) {
-            bon = Math.ceil(this.def * this.def_bonus_val)
-        } else {
-            bon = 0;
-        }
-        net = dam - (this.def + bon);
+        let net, bon, dam_multi;
+        bon = this.get_def_bonus();
+        dam_multi = this.get_dam_multiplicator();
+
+        net = Math.round(dam * dam_multi - (this.def + bon));
         if (net > 0) {
             this.curHP = this.curHP - net;
             return [net, this.curHP]
         } else {
             return [0, this.curHP]
         }
+    }
+
+    get_def_bonus() {
+        if (this.def_bonus) {
+            return Math.ceil(this.def * this.def_bonus_val)
+        } else {
+            return 0;
+        }
+    }
+
+    get_dam_multiplicator() {
+        let base;
+        base = 1;
+        if (this.ini <= 0) {
+            base += -0.2 * this.ini + 0.3;
+        }
+        return base;
     }
 
     defeated_message(player, grind = false) {
@@ -213,6 +233,19 @@ module.exports = class Enemy {
                 this.curHP = this.maxHP;
                 message += Tools.parseReply(AV.config.heal_enemy_complete, [this.curHP])
             }
+        }
+        return message;
+    }
+
+    revive(full = false, amount = 0) {
+        let message = "";
+        this.state = "alive";
+        this.curHP = 0;
+        this.heal(full, amount);
+        if (full) {
+            message += Tools.parseReply(AV.config.rivive_enemy_full, [this.name])
+        } else {
+            message += Tools.parseReply(AV.config.revive_enemy_part, [this.name, amount])
         }
         return message;
     }

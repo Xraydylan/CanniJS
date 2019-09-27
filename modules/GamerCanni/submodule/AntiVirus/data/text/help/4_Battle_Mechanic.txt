@@ -1,0 +1,41 @@
+Battle Mechanic
+As you know the battle system is turn based.
+
+It generally works as follows:
+
+At the beginning of each round the moves of the players (and of the enemies in the background) are selected.
+Than depending on the attack a modifier on the initiative value is applied for this round.
+
+The battle order is determined by a comparison of the initiative values. If the initiative are equal than the order is randomly decided.
+
+The attacks are then processed after one another.
+
+The general formula for your normal battle damage is:
+
+damage = (base attack + direct damage of weapon + a random value from 0 to the damage of weapon) - defense of enemy
+
+Your total direct damage is:
+base attack + direct damage of weapon
+
+Your total hit damage is:
+hit damage of weapon
+
+For each of the different attacks a this formula is modified.
+
+Generally the modifications are as follows:
+
+Strike
+--> Normal attack.
+--> generates a defense bonus for the incoming enemy attack according your defence.
+
+Brute Force
+--> reduces your initiative.
+--> adds a bonus to according to your base attack.
+
+Disrupt
+--> adds a bonus to your initiative.
+--> reduces your damage according to your LV.
+--> adds a small bonus to your damage according to your initiative.
+
+Charge
+--> damage of charges + 1 normal attacks with small bonus and half enemy defense each are calculated. This minus enemy defense is the total damage to the enemy.

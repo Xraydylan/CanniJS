@@ -8,7 +8,7 @@
       "restoreHP": 5,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s HP.\n\n",
+      "info": "%s restores %s HP.\n\n",
 
       "number": 1
     },
@@ -20,7 +20,7 @@
       "restoreHP": 8,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s HP.\n\n",
+      "info": "%s restores %s HP.\n\n",
 
       "number": 1
     },
@@ -32,7 +32,7 @@
       "restoreHP": 12,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s HP.\n\n",
+      "info": "%s restores %s HP.\n\n",
 
       "number": 1
     },
@@ -44,7 +44,7 @@
       "restoreHP": 15,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s HP.\n\n",
+      "info": "%s restores %s HP.\n\n",
 
       "number": 1
     },
@@ -56,7 +56,7 @@
       "restoreHP": 18,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s HP.\n\n",
+      "info": "%s restores %s HP.\n\n",
 
       "number": 1
     },
@@ -68,7 +68,7 @@
       "restoreHP": 22,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s HP.\n\n",
+      "info": "%s restores %s HP.\n\n",
 
       "number": 1
     },
@@ -80,7 +80,7 @@
       "restoreHP": 25,
       "heal_full": false,
       "reusable": false,
-      "info": "%s restores up to %s HP.\n\n",
+      "info": "%s restores %s HP.\n\n",
 
       "number": 1
     },
@@ -102,7 +102,7 @@
       "value": 3,
       "types": ["battle-item"],
       "subtype": "damage",
-      "damage": 4,
+      "damage": 5,
       "reusable": false,
       "info": "%s deals up to %s damage to an enemy.\n\n",
 
@@ -124,7 +124,7 @@
       "value": 10,
       "types": ["battle-item"],
       "subtype": "damage",
-      "damage": 12,
+      "damage": 14,
       "reusable": false,
       "info": "%s deals up to %s damage to an enemy.\n\n",
 
@@ -135,7 +135,7 @@
       "value": 18,
       "types": ["battle-item"],
       "subtype": "damage",
-      "damage": 18,
+      "damage": 20,
       "reusable": false,
       "info": "%s deals up to %s damage to an enemy.\n\n",
 
@@ -147,7 +147,7 @@
       "value": 12,
       "types": ["battle-item"],
       "subtype": "damage",
-      "damage": 12,
+      "damage": 14,
       "reusable": false,
       "bonus" : ["trojan"],
       "info": "%s deals up to %s damage to an enemy.\nDeals more damage to Trojans.\n\n",
@@ -159,7 +159,7 @@
       "value": 12,
       "types": ["battle-item"],
       "subtype": "damage",
-      "damage": 12,
+      "damage": 14,
       "reusable": false,
       "bonus" : ["worm"],
       "info": "%s deals up to %s damage to an enemy.\nDeals more damage to Worms.\n\n",
@@ -171,7 +171,7 @@
       "value": 12,
       "types": ["battle-item"],
       "subtype": "damage",
-      "damage": 12,
+      "damage": 14,
       "reusable": false,
       "bonus" : ["virus"],
       "info": "%s deals up to %s damage to an enemy.\nDeals more damage to Viruses.\n\n",
@@ -183,7 +183,7 @@
       "value": 20,
       "types": ["battle-item"],
       "subtype": "damage",
-      "damage": 1,
+      "damage": 18,
       "reusable": false,
       "bonus" : ["virus"],
       "info": "%s deals up to %s damage to an enemy.\nDeals more damage to Viruses.\n\n",
@@ -199,7 +199,7 @@
       "damage": 5,
       "conversion": 0.5,
       "reusable": false,
-      "info": "%s drains HP from an enemy and restores your hp by %s of damage dealt.\n\n",
+      "info": "%s drains up to %s HP from an enemy and restores your HP by %sx of damage dealt.\n\n",
 
       "number": 1
     },
@@ -211,7 +211,7 @@
       "damage": 8,
       "conversion": 0.5,
       "reusable": false,
-      "info": "%s drains HP from an enemy and restores your hp by %s of damage dealt.\n\n",
+      "info": "%s drains up to %s HP from an enemy and restores your HP by %sx of damage dealt.\n\n",
 
       "number": 1
     },
@@ -223,7 +223,7 @@
       "damage": 10,
       "conversion": 0.6,
       "reusable": false,
-      "info": "%s drains HP from an enemy and restores your hp by %s of damage dealt.\n\n",
+      "info": "%s drains up to %s HP from an enemy and restores your HP by %sx of damage dealt.\n\n",
 
       "number": 1
     },
@@ -232,10 +232,10 @@
       "value": 16,
       "types": ["battle-item"],
       "subtype": "drain",
-      "damage": 12,
+      "damage": 14,
       "conversion": 0.8,
       "reusable": false,
-      "info": "%s drains HP from an enemy and restores your hp by %s of damage dealt.\n\n",
+      "info": "%s drains up to %s HP from an enemy and restores your HP by %sx of damage dealt.\n\n",
 
       "number": 1
     },
@@ -244,10 +244,10 @@
       "value": 20,
       "types": ["battle-item"],
       "subtype": "drain",
-      "damage": 15,
+      "damage": 16,
       "conversion": 1,
       "reusable": false,
-      "info": "%s drains HP from an enemy and restores your hp by %sx ofdamage dealt.\n\n",
+      "info": "%s drains up to %s HP from an enemy and restores your HP by %sx of damage dealt.\n\n",
 
       "number": 1
     },
@@ -309,6 +309,67 @@
       "range": 3,
       "reusable": false,
       "info": "%s contains knowledge and grants up to %s exp.\n\n",
+
+      "number": 1
+    },
+
+    {"name": "Tiny Reviver",
+      "id": 501,
+      "value": 8,
+      "types": ["battle-item"],
+      "subtype": "revive",
+      "restoreHP": 5,
+      "heal_full": false,
+      "reusable": false,
+      "info": "%s revives target player to %s HP.\n\n",
+
+      "number": 1
+    },
+    {"name": "Small Reviver",
+      "id": 502,
+      "value": 8,
+      "types": ["battle-item"],
+      "subtype": "revive",
+      "restoreHP": 10,
+      "heal_full": false,
+      "reusable": false,
+      "info": "%s revives target player to %s HP.\n\n",
+
+      "number": 1
+    },
+    {"name": "Reviver",
+      "id": 503,
+      "value": 8,
+      "types": ["battle-item"],
+      "subtype": "revive",
+      "restoreHP": 15,
+      "heal_full": false,
+      "reusable": false,
+      "info": "%s revives target player to %s HP.\n\n",
+
+      "number": 1
+    },
+    {"name": "Strong Reviver",
+      "id": 504,
+      "value": 8,
+      "types": ["battle-item"],
+      "subtype": "revive",
+      "restoreHP": 20,
+      "heal_full": false,
+      "reusable": false,
+      "info": "%s revives target player to %s HP.\n\n",
+
+      "number": 1
+    },
+    {"name": "Full Reviver",
+      "id": 505,
+      "value": 8,
+      "types": ["battle-item"],
+      "subtype": "revive",
+      "restoreHP": 0,
+      "heal_full": true,
+      "reusable": false,
+      "info": "%s revives target player to full HP.\n\n",
 
       "number": 1
     }

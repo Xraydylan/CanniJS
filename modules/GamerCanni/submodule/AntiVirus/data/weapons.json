@@ -10,7 +10,7 @@
       "def_P": 0,
       "starter": true,
       "value": 10,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\n\n"
     },
     {
       "name": "Medium Laser",
@@ -22,7 +22,7 @@
       "def_P": 0,
       "starter": false,
       "value": 20,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\n\n"
     },
     {
       "name": "Large Laser",
@@ -34,7 +34,7 @@
       "def_P": 0,
       "starter": false,
       "value": 30,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\n\n"
     },
     {
       "name": "Canni Laser",
@@ -46,7 +46,7 @@
       "def_P": 0,
       "starter": false,
       "value": 40,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\nCanni *really* likes Lasers!\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\nCanni *really* likes Lasers!\n\n"
     },
     {
       "name": "Small Plasmagun",
@@ -58,7 +58,7 @@
       "def_P": 0,
       "starter": true,
       "value": 10,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\n\n"
     },
     {
       "name": "Medium Plasmagun",
@@ -70,7 +70,7 @@
       "def_P": 0,
       "starter": false,
       "value": 20,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\n\n"
     },
     {
       "name": "Large Plasmagun",
@@ -82,7 +82,7 @@
       "def_P": 0,
       "starter": false,
       "value": 30,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\n\n"
     },
     {
       "name": "Wachmann Plasmagun",
@@ -94,7 +94,7 @@
       "def_P": 0,
       "starter": false,
       "value": 40,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\nWachmann himself swears by the effectiveness of the *Wachmann Plasmagun*.\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\nWachmann himself swears by the effectiveness of the *Wachmann Plasmagun*.\n\n"
     },
     {
       "name": "Small Data-Launcher",
@@ -106,7 +106,7 @@
       "def_P": 0,
       "starter": true,
       "value": 10,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\n\n"
     },
     {
       "name": "Medium Data-Launcher",
@@ -118,7 +118,7 @@
       "def_P": 0,
       "starter": false,
       "value": 20,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\n\n"
     },
     {
       "name": "Large Data-Launcher",
@@ -130,7 +130,7 @@
       "def_P": 0,
       "starter": false,
       "value": 30,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\n\n"
     },
     {
       "name": "Sani Data-Launcher",
@@ -142,7 +142,7 @@
       "def_P": 0,
       "starter": false,
       "value": 40,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\nSani's personal favourite.\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\nSani's personal favourite.\n\n"
     },
     {
       "name": "Boop Gun",
@@ -154,7 +154,7 @@
       "def_P": 0,
       "starter": false,
       "value": 45,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\nCompressed Boop effectiveness!\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\nCompressed Boop effectiveness!\n\n"
     },
     {
       "name": "Megaboop Gun",
@@ -166,7 +166,7 @@
       "def_P": 0,
       "starter": false,
       "value": 55,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\nThe world's second most powerful boop weapon, right after Canni Bot.\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\nThe world's second most powerful boop weapon, right after Canni Bot.\n\n"
     },
     {
       "name": "Bass Cannon",
@@ -178,19 +178,32 @@
       "def_P": 0,
       "starter": false,
       "value": 55,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\nFeel the bass!\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\nFeel the bass!\n\n"
     },
     {
       "name": "Mango-Launcher",
       "id": 404,
-      "lv": 5,
+      "lv": 6,
       "atk": 3,
       "atk_P": 12,
       "def": 0,
       "def_P": 0,
       "starter": false,
       "value": 55,
-      "info": "%s causes up to %s direct damage and up to %s hit damage.\nThe mango doesn't actually cause that much damage. It's what happens afterwards...\n\n"
+      "info": "%s causes %s direct damage and up to %s hit damage.\nThe mango doesn't actually cause that much damage. It's what happens afterwards...\n\n"
+    },
+
+    {
+      "name": "\"Black Sun\" Ultraviolet Laser Rifle",
+      "id": 501,
+      "lv": 10,
+      "atk": 10,
+      "atk_P": 20,
+      "def": 0,
+      "def_P": 0,
+      "starter": false,
+      "value": 999,
+      "info": "%s causes %s direct damage and up to %s hit damage.\n Not much can withstand the ultimate force of the \"Black Sun\" Ultraviolet Laser Rifle for long.\nIt´s Xrays favorite weapon in battle and the only thing that is more energetic than the \"Black Sun\" Ultraviolet Laser Rifle is Xray himself.\n\n"
     }
   ]
 }
