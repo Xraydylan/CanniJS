@@ -23,9 +23,21 @@ module.exports = class Item {
             this.experience = data.experience;
             this.range = data.range;
             this.bonus = data.bonus;
+            this.target_type = data.target_type;
+
             if (!this.bonus) {
                 this.bonus = [];
             }
+
+            this.duration_data = data.duration_data;
+
+            if (data.duration_item) {
+                this.duration_item = true;
+                this.load_duration_data(data.duration_data);
+            } else {
+                this.duration_item = false;
+            }
+            this.subsubtypes = data.subsubtypes;
 
             this.number = data.number;
             this.loadinfo(data.info);
@@ -44,11 +56,24 @@ module.exports = class Item {
             text = Tools.parseReply(pre, [this.name, this.damage, this.conversion])
         } else if (this.subtype === "exp") {
             text = Tools.parseReply(pre, [this.name, this.experience + this.range])
+        } else if (this.subtype === "shield") {
+            text = Tools.parseReply(pre, [this.name, this.rounds_active, this.def_bonus_mul, this.def_bonus_add])
         } else {
             text = "No Info Available";
         }
 
         this.info = text;
+    }
+
+    load_duration_data(data) {
+        this.rounds_active = data.rounds_active;
+        this.uses_total = data.uses_total;
+        this.on_round = data.on_round;
+        this.on_use = data.on_use;
+
+        this.def_bonus = data.def_bonus;
+        this.atk_bonus = data.atk_bonus;
+        this.init_bonus = data.init_bonus;
     }
 
     static get_item_by_id(id) {
@@ -105,18 +130,31 @@ module.exports = class Item {
             target = user.target;
         }
 
-        if (this.subtype === "heal") {
-            message += this.heal(target);
+        if (target.state === "alive") {
+            if (this.subtype === "heal") {
+                message += this.heal(target);
+            }
+            if (this.subtype === "damage") {
+                message += this.apply_damage(battle, user, target);
+            }
+            if (this.subtype === "drain") {
+                message += this.apply_drain(battle, user, target);
+            }
+            if (this.subtype === "revive") {
+                message += this.apply_revive(battle, user, target);
+            }
+            if (this.subtype === "shield") {
+                message += this.apply_shield(battle, user, target);
+            }
+        } else {
+            if (this.subtype === "revive") {
+                message += this.apply_revive(battle, user, target);
+            } else {
+                message += Tools.parseReply(AV.config.item_fail_traget_defeated, [user.name, target.name]);
+            }
         }
-        if (this.subtype === "damage") {
-            message += this.apply_damage(battle, user, target);
-        }
-        if (this.subtype === "drain") {
-            message += this.apply_drain(battle, user, target);
-        }
-        if (this.subtype === "revive") {
-            message += this.apply_revive(battle, user, target);
-        }
+
+
 
 
         this.consume(user);
@@ -173,13 +211,20 @@ module.exports = class Item {
 
     apply_revive(battle, user, target) {
         let message = "";
-        if (target.state = "alive") {
+        if (target.state === "alive") {
             message += Tools.parseReply(AV.config.revive_target_alive, [user.name, this.name]);
         } else {
             message += target.revive(this.heal_full, this.restoreHP);
         }
         return message;
     }
+
+    apply_shield(battle, target) {
+        let message = "";
+        message += target.add_duration_item(this);
+        return message;
+    }
+
 
     gain_exp(user) {
         let ran = Tools.getRandomIntFromInterval(-this.range,this.range);
@@ -192,4 +237,41 @@ module.exports = class Item {
         }
     }
 
+    check_duration(type, entity, subtype = "") {
+        let cond, message;
+        cond = false;
+        message = "";
+        if (type === "round") {
+            if (this.on_round) {
+                this.rounds_active -= 1;
+                [cond, message] = this.d_check_depletion(this.rounds_active, entity);
+            }
+        } else if (type === "use") {
+            if (this.on_use) {
+                if (this.subsubtypes.includes(subtype)) {
+                    this.uses_total -= 1;
+                    [cond, message] = this.d_check_depletion(this.uses_total, entity);
+                }
+            }
+        } else {
+            console.log("type error duration item pass in player")
+        }
+
+        return [cond, message];
+    }
+
+    d_check_depletion(num ,entity) {
+        let cond, message;
+        cond = false;
+        message = "";
+        if (num < 0) {
+            cond = true;
+            if (entity.type === "player") {
+                message += Tools.parseReply(AV.config.duration_item_over_player, [this.name, entity.name]);
+            } else if (entity.type === "enemy") {
+                message += Tools.parseReply(AV.config.duration_item_over_enemy, [this.name, entity.name]);
+            }
+        }
+        return [cond, message];
+    }
 };

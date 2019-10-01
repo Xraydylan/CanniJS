@@ -54,6 +54,10 @@ module.exports = class Enemy {
         this.def_bonus = false;
         this.def_bonus_val = 0.4;
 
+        this.d_rest = "";
+
+        this.battle_duration_itmes = [];
+
         this.type = "enemy";
         this.curHP = this.maxHP;
 
@@ -179,18 +183,28 @@ module.exports = class Enemy {
         return 0;
     }
 
-
     receive_damage(dam) {
-        let net, bon, dam_multi;
-        bon = this.get_def_bonus();
+        let net, dam_multi;
         dam_multi = this.get_dam_multiplicator();
 
-        net = Math.round(dam * dam_multi - (this.def + bon));
+        net = Math.round(dam * dam_multi - this.get_def());
+        this.d_pass("use", "def");
         if (net > 0) {
             this.curHP = this.curHP - net;
             return [net, this.curHP]
         } else {
             return [0, this.curHP]
+        }
+    }
+
+    get_def() {
+        let def, mul, add;
+        [mul, add] = this.d_item_bonus("def");
+        def = mul*this.def + add + this.get_def_bonus();
+        if (def < 0) {
+            return 0;
+        } else {
+            return def;
         }
     }
 
@@ -265,4 +279,69 @@ module.exports = class Enemy {
 
     }
 
+    add_duration_item(item) {
+        this.battle_duration_itmes.push(item);
+        return "";
+    }
+
+    d_item_bonus(type) {
+        let mul, add;
+        mul = 1;
+        add = 0;
+        this.battle_duration_itmes.forEach(item => {
+            switch (type) {
+                case "def" : {
+                    if (item.def_bonus) {
+                        add += item.def_bonus.add;
+                        mul += item.def_bonus.mul;
+                    }
+                    break;
+                }
+                case "atk": {
+                    if (item.atk_bonus) {
+                        add += item.atk_bonus.add;
+                        mul += item.atk_bonus.mul;
+                    }
+                    break;
+                }
+                case "init" : {
+                    if (item.init_bonus) {
+                        add += item.init_bonus.add;
+                        mul += item.init_bonus.mul;
+                    }
+                    break;
+                }
+            }
+
+        });
+        return [mul,add]
+    }
+
+    d_pass(type, subtype = "", store = false) {
+        let tmp, message, info;
+        tmp = [];
+        message = "";
+
+        this.battle_duration_itmes.forEach(item => {
+            info = item.check_duration(type, this, subtype);
+            if (info[0]) {
+                message += info[1];
+            } else {
+                tmp.push(item);
+            }
+        });
+        this.battle_duration_itmes = tmp;
+        if (store) {
+            this.d_rest += message;
+            return "";
+        } else {
+            return message;
+        }
+    }
+
+    d_pass_rest() {
+        let tmp = this.d_rest;
+        this.d_rest = "";
+        return tmp;
+    }
 };

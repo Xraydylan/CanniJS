@@ -67,12 +67,13 @@
 
   "item_damage_enemy": "%s was hit for %s damage and now has %s HP.\n",
   "item_damage_player": "%s was hit for %s damage and now has %s HP.\n",
+  "item_fail_traget_defeated": "%s, the item had no effect on the defeated target %s...\n",
 
-  "revive_target_alive" : "%s, the target for %s is already alive... The item has no effect...",
-  "rivive_player_full" : "%s has been revived and HP were fully restored.",
-  "revive_player_part" : "%s has been revived and HP were restored to %s HP.",
-  "rivive_enemy_full" : "%s has been revived and HP were fully restored.",
-  "revive_enemy_part" : "%s has been revived and HP were restored to %s HP.",
+  "revive_target_alive" : "%s, the target for %s is already alive... The item has no effect...\n",
+  "rivive_player_full" : "%s has been revived and HP were fully restored.\n",
+  "revive_player_part" : "%s has been revived and HP were restored to %s HP.\n",
+  "rivive_enemy_full" : "%s has been revived and HP were fully restored.\n",
+  "revive_enemy_part" : "%s has been revived and HP were restored to %s HP.\n",
 
   "startbattle_item": "Select an item:\n",
   "selector_no_items": "%s, you don't have any items your inventory.",
@@ -126,9 +127,10 @@
   "multi_start_combat_2" : "Players! Choose your move. (Strike, Brute force, Charge, Disrupt, Item, Data)\n",
   "multi_attack_already_selected": "%s, you already choose a move this turn.\n",
   "selector_no_enemies": "Sorry, there are no enemies...\n",
-  "selector_pattern_enemies" : "%s: %s LV: %s\n",
+  "selector_pattern_enemies" : "%s: %s   LV: %s   HP: %s\n",
   "selector_no_players" : "Sorry, there are no players...\n",
-  "selector_pattern_players" : "%s: %s LV: %s\n",
+  "selector_pattern_players" : "%s: %s   LV: %s   HP: %s\n",
+  "selector_pattern_players_defeated" : "%s: %s   LV: %s   HP: %s      DEFEATED\n",
   "multi_attack_lock" : "%s, your selected attack has been locked.\n",
 
   "player_defeated_target_message" : "%s misses the target %s because the target was already defeated.\n",
@@ -141,6 +143,9 @@
   "multi_won": "\nCongratulations! You won the battle!\n",
   "choose_target_enemy": "%s, choose a enemy as target for your item.\n",
   "choose_target_player": "%s, choose a player as target for your item:\n",
-  "multi_already_different_type" : "%s, there is already a multi player game of a different type on this channel.\n"
+  "multi_already_different_type" : "%s, there is already a multi player game of a different type on this channel.\n",
+
+  "duration_item_over_player" : "%s has lost its effect on %s\n",
+  "duration_item_over_enemy" : "%s has lost its effect on %s\n"
 
 }

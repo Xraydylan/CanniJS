@@ -7,6 +7,7 @@ const Player = require('./player');
 const Weapon = require('./weapon');
 const Item = require('./item');
 const Enemy = require('./enemy');
+const Attack = require('./attack');
 
 module.exports = class Battle_PvE{
     constructor(player, enemy, grind) {
@@ -54,8 +55,8 @@ module.exports = class Battle_PvE{
 
         order.forEach(entity => {
             if (entity.state === "alive") {
-                this.attack_processor(entity, entity.target);
-                if (this.defeat_check(entity, entity.target)) {
+                this.attack_processor(entity, entity.target, num);
+                if (this.defeat_check(entity, entity.target, num)) {
                     entity.target.state = "defeated";
                 }
             }
@@ -67,6 +68,9 @@ module.exports = class Battle_PvE{
             this.player.battle_id = undefined;
             this.player.battle = undefined;
             this.player.state = "alive";
+        } else {
+            this.message += this.check_d_items();
+
         }
 
         return this.message;
@@ -152,114 +156,48 @@ module.exports = class Battle_PvE{
 
 
     strike(attacker, defender) {
-        let dam, p, res;
-        switch (attacker.type) {
-            case "player": {
-                p = Tools.getRandomIntFromInterval(0, attacker.weapon.atk_P);
-                dam = attacker.atk + attacker.weapon.atk + p;
-                break;
-            }
-            case "enemy" : {
-                p = Tools.getRandomIntFromInterval(0, attacker.atk_P);
-                dam = attacker.atk + p;
-                break;
-            }
-            default : {
-                console.log("battle strike type error!");
-                dam = 0;
-            }
-        }
+        let res;
 
-        res = defender.receive_damage(dam);
+        res = Attack.strike(attacker, defender);
 
         this.strike_message(attacker, defender, res[0]);
     }
 
     brute(attacker, defender) {
-        let dam, p, res;
-        switch (attacker.type) {
-            case "player": {
-                p = Tools.getRandomIntFromInterval(0, attacker.weapon.atk_P);
-                dam = (2*attacker.atk+1) + attacker.weapon.atk + p;
-                break;
-            }
-            case "enemy" : {
-                p = Tools.getRandomIntFromInterval(0, attacker.atk_P);
-                dam = (2*attacker.atk+1) + p;
-                break;
-            }
-            default : {
-                console.log("battle brute type error!");
-                dam = 0;
-            }
-        }
+        let res;
 
-        res = defender.receive_damage(dam);
+        res = Attack.brute(attacker, defender);
 
         this.brute_message(attacker, defender, res[0]);
     }
 
     charge(attacker) {
-        if (attacker.charge_on) {
-            attacker.charge_count += 1;
-        } else {
-            attacker.charge_on = true;
-            attacker.charge_count = 1;
-        }
-
+        Attack.charge(attacker);
         this.charge_message(attacker);
     }
 
     release(attacker, defender) {
-        let dam, p, res;
+        let res;
 
-        if (!attacker.charge_on) {
+        res = Attack.release(attacker, defender);
+
+        if (!res[1]) {
             this.strike(attacker, defender);
         } else {
-            dam = this.release_attack_damage(attacker,defender);
-
-            res = defender.receive_damage(dam);
-
-            attacker.charge_on = false;
-            attacker.charge_count = 0;
-
-            this.release_message(attacker, defender, res[0]);
+            this.release_message(attacker, defender, res[0][0]);
         }
     }
 
     disrupt(attacker, defender) {
-        let dam, p, res;
-        switch (attacker.type) {
-            case "player": {
-                p = Tools.getRandomIntFromInterval(0, attacker.weapon.atk_P);
-                dam = (attacker.atk - attacker.lv + attacker.ini - 1) + attacker.weapon.atk + p;
-                break;
-            }
-            case "enemy" : {
-                p = Tools.getRandomIntFromInterval(0, attacker.atk_P);
-                dam = (attacker.atk - attacker.lv + attacker.ini- 1) + p;
-                break;
-            }
-            default : {
-                console.log("battle disrupt type error!");
-                dam = 0;
-            }
+        let res;
+
+        res = Attack.disrupt(attacker, defender);
+
+        this.disrupt_message(attacker, defender, res[0][0], res[1]);
+
+        if (res[2]) {
+            this.release_fail_message(defender, res[3][0]);
         }
-
-        res = defender.receive_damage(dam);
-
-        this.disrupt_message(attacker, defender, res[0]);
-
-        if (defender.charge_on) {
-            dam = Math.floor(this.release_attack_damage(defender, defender) / 2);
-            res = defender.receive_damage(dam);
-            defender.charge_on = false;
-            defender.charge_count = 0;
-
-            this.release_fail_message(defender, res[0]);
-        }
-
-
     }
 
     item_use(attacker, defender, num) {
@@ -273,6 +211,17 @@ module.exports = class Battle_PvE{
             }
         }
 
+    }
+
+    check_d_items() {
+        let message = "";
+        message += this.player.d_pass("round");
+        message += this.enemy.d_pass("round");
+
+        if (message === "") {
+            return message;
+        }
+        return "\n" + message;
     }
 
 
@@ -340,14 +289,14 @@ module.exports = class Battle_PvE{
         }
     }
 
-    disrupt_message(attacker, defender, damage) {
+    disrupt_message(attacker, defender, damage, hp) {
         switch (attacker.type) {
             case "player": {
-                this.message += Tools.parseReply(AV.config.player_disrupt_message, [attacker.name, defender.name, damage, defender.name, defender.curHP]);
+                this.message += Tools.parseReply(AV.config.player_disrupt_message, [attacker.name, defender.name, damage, defender.name, hp]);
                 break;
             }
             case "enemy" : {
-                this.message += Tools.parseReply(AV.config.enemy_disrupt_message, [defender.name, attacker.name, damage, defender.name, defender.curHP]);
+                this.message += Tools.parseReply(AV.config.enemy_disrupt_message, [defender.name, attacker.name, damage, defender.name, hp]);
                 break;
             }
             default : {
@@ -370,35 +319,6 @@ module.exports = class Battle_PvE{
                 console.log("battle release_fail message type error!");
             }
         }
-    }
-
-    release_attack_damage(attacker, defender) {
-        let dam, p, def;
-        def = Math.floor(defender.def/2);
-        dam = def;
-        switch (attacker.type) {
-            case "player": {
-                let i;
-                for (i = 0; i <= attacker.charge_count; i++) {
-                    p = Tools.getRandomIntFromInterval(0, attacker.weapon.atk_P);
-                    dam += attacker.atk + attacker.weapon.atk + p + attacker.lv - def;
-                }
-                break;
-            }
-            case "enemy" : {
-                let i;
-                for (i = 0; i <= attacker.charge_count; i++) {
-                    p = Tools.getRandomIntFromInterval(0, attacker.atk_P);
-                    dam += attacker.atk + p + attacker.lv - def;
-                }
-                break;
-            }
-            default : {
-                console.log("battle release type error!");
-                dam = 0;
-            }
-        }
-        return dam;
     }
 
     static get_attack_from_char(char) {

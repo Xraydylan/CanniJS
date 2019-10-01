@@ -404,10 +404,11 @@ module.exports = class AntiVirus {
         this.sender(msg, Tools.parseReply(message));
     }
 
+    //debug
     static battle_start(msg, p) {
         let mon = new Enemy(false, AV.virus[0]);
         p.battle = new Battle_PvE(p, mon);
-        this.sender(msg, Tools.parseReply(AV.config.startcombat,[mon.name]));
+        this.sender(msg, Tools.parseReply(AV.config.startcombat, [mon.name]));
     }
 
     static battle_manager(msg, input, p) {
