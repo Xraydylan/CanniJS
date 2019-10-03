@@ -30,6 +30,9 @@
   "player_release_fail_message": "You were hit while you were charging. The accumulated charge exploded and caused %s damage.\n%s now has %s HP.\n",
   "enemy_release_fail_message": "You hit %s while it was charging. The accumulated charge exploded and caused %s damage.\n%s now has %s HP.\n",
 
+  "player_return_damage_message" :  "%s, your target %s caused %s return damage. %s now has %s HP.\n",
+  "enemy_return_damage_message" : "%s, %s receives %s return damage. %s now has %s HP.\n",
+
   "battle_data" : "%s, you are currently fighting %s.\nHere are your stats in comparison (Enemy|Player):\n\n",
   "battle_data_pattern" : "%s:\n%s   %s   %s\n",
 

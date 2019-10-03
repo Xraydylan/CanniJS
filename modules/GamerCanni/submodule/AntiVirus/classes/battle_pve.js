@@ -30,6 +30,8 @@ module.exports = class Battle_PvE{
         player.item_selector();
         player.set_to_base();
         player.state = "alive";
+        player.battle_duration_itmes = [];
+        player.d_rest = "";
 
         this.id = player.id;
         this.player = player;
@@ -161,6 +163,10 @@ module.exports = class Battle_PvE{
         res = Attack.strike(attacker, defender);
 
         this.strike_message(attacker, defender, res[0]);
+
+        if (res[2]) {
+            this.return_damage(attacker, defender, res[2]);
+        }
     }
 
     brute(attacker, defender) {
@@ -169,6 +175,10 @@ module.exports = class Battle_PvE{
         res = Attack.brute(attacker, defender);
 
         this.brute_message(attacker, defender, res[0]);
+
+        if (res[2]) {
+            this.return_damage(attacker, defender, res[2]);
+        }
     }
 
     charge(attacker) {
@@ -182,9 +192,12 @@ module.exports = class Battle_PvE{
         res = Attack.release(attacker, defender);
 
         if (!res[1]) {
-            this.strike(attacker, defender);
+            this.strike_message(attacker, defender, res[0][0]);
         } else {
             this.release_message(attacker, defender, res[0][0]);
+        }
+        if (res[0][2]) {
+            this.return_damage(attacker, defender, res[0][2]);
         }
     }
 
@@ -197,6 +210,9 @@ module.exports = class Battle_PvE{
 
         if (res[2]) {
             this.release_fail_message(defender, res[3][0]);
+        }
+        if (res[0][2]) {
+            this.return_damage(attacker, defender, res[0][2]);
         }
     }
 
@@ -216,12 +232,22 @@ module.exports = class Battle_PvE{
     check_d_items() {
         let message = "";
         message += this.player.d_pass("round");
+        message += this.player.d_pass_rest();
         message += this.enemy.d_pass("round");
+        message += this.enemy.d_pass_rest();
+
 
         if (message === "") {
             return message;
         }
         return "\n" + message;
+    }
+
+    return_damage(attacker, defender, dam) {
+        let res;
+        res = attacker.receive_damage(dam, false);
+
+        this.return_damage_message(attacker, defender, res[0]);
     }
 
 
@@ -317,6 +343,22 @@ module.exports = class Battle_PvE{
             }
             default : {
                 console.log("battle release_fail message type error!");
+            }
+        }
+    }
+
+    return_damage_message(attacker, defender, dam) {
+        switch (attacker.type) {
+            case "player": {
+                this.message += Tools.parseReply(AV.config.player_return_damage_message, [attacker.name, defender.name, damage, attacker.name, attacker.curHP]);
+                break;
+            }
+            case "enemy" : {
+                this.message += Tools.parseReply(AV.config.enemy_return_damage_message, [defender.name, attacker.name, damage, attacker.name, attacker.curHP]);
+                break;
+            }
+            default : {
+                console.log("battle strike message type error!");
             }
         }
     }

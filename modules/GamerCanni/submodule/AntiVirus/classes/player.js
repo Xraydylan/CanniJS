@@ -140,28 +140,31 @@ module.exports = class Player {
         return message;
     }
 
-    receive_damage(dam) {
-        let net, dam_multi;
+    receive_damage(dam,use_d_item = true) {
+        let net, dam_multi,def, return_damage;
         dam_multi = this.get_dam_multiplicator();
+        [def,return_damage] = this.get_def();
 
-        net = Math.round(dam * dam_multi - this.get_def());
-        this.d_pass("use", "def");
+        net = Math.round(dam * dam_multi - def);
+        if (use_d_item) {
+            this.d_pass("use", "def");
+        }
         if (net > 0) {
             this.curHP = this.curHP - net;
-            return [net, this.curHP]
+            return [net, this.curHP, return_damage]
         } else {
-            return [0, this.curHP]
+            return [0, this.curHP, return_damage]
         }
     }
 
     get_def() {
-        let def, mul, add;
-        [mul, add] = this.d_item_bonus("def");
+        let def, mul, add, return_damage;
+        [mul, add, return_damage] = this.d_item_bonus("def");
         def = mul*this.def + add + this.get_def_bonus();
         if (def < 0) {
-            return 0;
+            return [0,return_damage];
         } else {
-            return def;
+            return [def,return_damage];
         }
     }
 
@@ -411,9 +414,10 @@ module.exports = class Player {
     }
 
     d_item_bonus(type) {
-        let mul, add;
+        let mul, add,return_damage;
         mul = 1;
         add = 0;
+        return_damage = 0;
         this.battle_duration_itmes.forEach(item => {
             switch (type) {
                 case "def" : {
@@ -438,9 +442,11 @@ module.exports = class Player {
                     break;
                 }
             }
-
+            if (item.subtype === "offensive-shield") {
+                return_damage += item.damage;
+            }
         });
-        return [mul,add]
+        return [mul,add,return_damage]
     }
 
     d_pass(type, subtype = "", store = false) {

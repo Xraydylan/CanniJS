@@ -341,7 +341,7 @@
 
     {"name": "Tiny Reviver",
       "id": 501,
-      "value": 8,
+      "value": 5,
       "target_type": "allies",
       "types": ["battle-item"],
       "subtype": "revive",
@@ -354,7 +354,7 @@
     },
     {"name": "Small Reviver",
       "id": 502,
-      "value": 8,
+      "value": 10,
       "target_type": "allies",
       "types": ["battle-item"],
       "subtype": "revive",
@@ -367,7 +367,7 @@
     },
     {"name": "Reviver",
       "id": 503,
-      "value": 8,
+      "value": 15,
       "target_type": "allies",
       "types": ["battle-item"],
       "subtype": "revive",
@@ -380,7 +380,7 @@
     },
     {"name": "Strong Reviver",
       "id": 504,
-      "value": 8,
+      "value": 18,
       "target_type": "allies",
       "types": ["battle-item"],
       "subtype": "revive",
@@ -393,7 +393,7 @@
     },
     {"name": "Full Reviver",
       "id": 505,
-      "value": 8,
+      "value": 22,
       "target_type": "allies",
       "types": ["battle-item"],
       "subtype": "revive",
@@ -405,22 +405,105 @@
       "number": 1
     },
 
-    {"name": "Debug Shield",
+    {"name": "Small Shield",
       "id": 601,
-      "value": 8,
+      "value": 7,
       "target_type": "allies",
       "types": ["battle-item"],
       "subtype": "shield",
       "subsubtypes": ["def"],
       "reusable": false,
-      "info": "%s shields you for %s rounds and therefore grands a %s% bonus + %s to your defense.\n\n",
+      "info": "%s shields you for %s rounds and therefore grands a %s% def bonus + %s to your defense.\n\n",
 
       "duration_item" : true,
       "duration_data" : {
         "on_round" : true,
         "on_use" : false,
-        "def_bonus" : {"mul" : 0.6, "add" : 4},
-        "rounds_active": 2
+        "def_bonus" : {"mul" : 0.6, "add" : 2},
+        "rounds_active": 3
+      },
+
+      "number": 1
+    },
+    {"name": "Shield",
+      "id": 602,
+      "value": 10,
+      "target_type": "allies",
+      "types": ["battle-item"],
+      "subtype": "shield",
+      "subsubtypes": ["def"],
+      "reusable": false,
+      "info": "%s shields you for %s rounds and therefore grands a %s% def bonus + %s to your defense.\n\n",
+
+      "duration_item" : true,
+      "duration_data" : {
+        "on_round" : true,
+        "on_use" : false,
+        "def_bonus" : {"mul" : 0.8, "add" : 4},
+        "rounds_active": 4
+      },
+
+      "number": 1
+    },
+    {"name": "Hextech-Shield",
+      "id": 603,
+      "value": 15,
+      "target_type": "allies",
+      "types": ["battle-item"],
+      "subtype": "shield",
+      "subsubtypes": ["def"],
+      "reusable": false,
+      "info": "%s shields you for %s rounds and therefore grands a %s% def bonus + %s to your defense.\n\n",
+
+      "duration_item" : true,
+      "duration_data" : {
+        "on_round" : true,
+        "on_use" : false,
+        "def_bonus" : {"mul" : 1, "add" : 5},
+        "rounds_active": 4
+      },
+
+      "number": 1
+    },
+
+    {"name": "Spike Shield",
+      "id": 604,
+      "value": 12,
+      "target_type": "allies",
+      "types": ["battle-item"],
+      "subtype": "offensive-shield",
+      "subsubtypes": ["def"],
+      "reusable": false,
+      "info": "%s shields you %s times and therefore grands a %s% def bonus + %s to your defense.\nIt causes up to %s return damage to the attacker.\n\n",
+
+      "damage": 4,
+      "duration_item" : true,
+      "duration_data" : {
+        "on_round" : false,
+        "on_use" : true,
+        "def_bonus" : {"mul" : 0.8, "add" : 3},
+        "uses_total": 3
+      },
+
+      "number": 1
+    },
+    {"name": "Firewall Shield",
+      "id": 605,
+      "value": 20,
+      "target_type": "allies",
+      "types": ["battle-item"],
+      "subtype": "offensive-shield",
+      "subsubtypes": ["def"],
+      "reusable": false,
+      "info": "%s shields you %s times and therefore grands a %s% def bonus + %s to your defense.\nIt causes up to %s return damage to the attacker.\n\n",
+
+      "damage": 6,
+      "duration_item" : true,
+      "duration_data" : {
+        "on_round" : false,
+        "on_use" : true,
+        "def_bonus" : {"mul" : 1.2, "add" : 5},
+        "uses_total": 4
       },
 
       "number": 1

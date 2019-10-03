@@ -63,6 +63,8 @@ module.exports = class Battle_PvE_Multi{
         player.item_target_finder_on = false;
         player.alive_rounds = 0;
         player.selected_battle_item = undefined;
+        player.battle_duration_itmes = [];
+        player.d_rest = "";
         player.item_selector();
         this.players.push(player);
     }
@@ -407,6 +409,9 @@ module.exports = class Battle_PvE_Multi{
                     this.disrupt(attacker, defender);
                     break;
                 }
+                case "item": {
+                    break;
+                }
                 default : {
                     console.log("battle no attack error! ("+attacker.battle_attack+")");
                 }
@@ -431,6 +436,10 @@ module.exports = class Battle_PvE_Multi{
         res = Attack.strike(attacker, defender);
 
         this.strike_message(attacker, defender, res[0]);
+
+        if (res[2]) {
+            this.return_damage(attacker, defender, res[2]);
+        }
     }
 
     brute(attacker, defender) {
@@ -439,6 +448,10 @@ module.exports = class Battle_PvE_Multi{
         res = Attack.brute(attacker, defender);
 
         this.brute_message(attacker, defender, res[0]);
+
+        if (res[2]) {
+            this.return_damage(attacker, defender, res[2]);
+        }
     }
 
     charge(attacker) {
@@ -452,9 +465,12 @@ module.exports = class Battle_PvE_Multi{
         res = Attack.release(attacker, defender);
 
         if (!res[1]) {
-            this.strike(attacker, defender);
+            this.strike_message(attacker, defender, res[0][0]);
         } else {
             this.release_message(attacker, defender, res[0][0]);
+        }
+        if (res[0][2]) {
+            this.return_damage(attacker, defender, res[0][2]);
         }
     }
 
@@ -467,6 +483,9 @@ module.exports = class Battle_PvE_Multi{
 
         if (res[2]) {
             this.release_fail_message(defender, res[3][0]);
+        }
+        if (res[0][2]) {
+            this.return_damage(attacker, defender, res[0][2]);
         }
     }
 
@@ -485,6 +504,13 @@ module.exports = class Battle_PvE_Multi{
             }
         }
 
+    }
+
+    return_damage(attacker, defender, dam) {
+        let res;
+        res = attacker.receive_damage(dam, false);
+
+        this.return_damage_message(attacker, defender, res[0]);
     }
 
     defeated_target(attacker, defender) {
@@ -584,6 +610,22 @@ module.exports = class Battle_PvE_Multi{
             }
             default : {
                 console.log("battle release_fail message type error!");
+            }
+        }
+    }
+
+    return_damage_message(attacker, defender, dam) {
+        switch (attacker.type) {
+            case "player": {
+                this.message += Tools.parseReply(AV.config.player_return_damage_message, [attacker.name, defender.name, dam, attacker.name, attacker.curHP]);
+                break;
+            }
+            case "enemy" : {
+                this.message += Tools.parseReply(AV.config.enemy_return_damage_message, [defender.name, attacker.name, dam, attacker.name, attacker.curHP]);
+                break;
+            }
+            default : {
+                console.log("battle strike message type error!");
             }
         }
     }

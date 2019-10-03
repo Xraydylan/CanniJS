@@ -535,6 +535,7 @@ module.exports = class AntiVirus {
     }
 
     static battle_item_manager(msg, input, battle, p) {
+        let pre;
         let num = parseInt(input);
         if (num) {
             if (num <= p.items_battle_count) {
@@ -546,7 +547,17 @@ module.exports = class AntiVirus {
                 }
             }
         } else {
-            if (this.input_is_list(input, ["back","b"])) {
+            if (this.input_starts_word_list(input,["info", "i"])) {
+                pre = input.split(" ");
+                if (pre.length >= 2) {
+                    num = parseInt(pre[1]);
+                    if (num) {
+                        if (num <= p.battle_inventory.length) {
+                            this.sender(msg, p.inventory[num - 1].info);
+                        }
+                    }
+                }
+            } else if (this.input_is_list(input, ["back","b"])) {
                 p.battle_item_on = false;
                 this.sender(msg, Tools.parseReply(AV.config.battle_choose_move,[p.name]))
             } else {
@@ -585,6 +596,7 @@ module.exports = class AntiVirus {
             } else {
                 message += Tools.parseReply(AV.config.points_available_points,[p.name, p.stat_points]);
             }
+            p.set_to_base();
             message += Tools.parseReply(AV.config.points_stats,[p.atk,p.def,p.ini]);
             message += Tools.parseReply(AV.config.points_question);
             p.stat_select_on = true;
@@ -599,16 +611,19 @@ module.exports = class AntiVirus {
         if (this.input_is_list(input, ["attack","atk"])) {
             p.atk_base += 1;
             p.stat_points -= 1;
+            p.set_to_base();
             this.save_players();
             message += Tools.parseReply(AV.config.increase_atk)
         } else if (this.input_is_list(input, ["defense","def"])) {
             p.def_base += 1;
             p.stat_points -= 1;
+            p.set_to_base();
             this.save_players();
             message += Tools.parseReply(AV.config.increase_def)
         } else if (this.input_is_list(input, ["initiative","init"])) {
             p.ini_base += 1;
             p.stat_points -= 1;
+            p.set_to_base();
             this.save_players();
             message += Tools.parseReply(AV.config.increase_ini)
         } else if (this.input_is_list(input, ["back","b"])) {

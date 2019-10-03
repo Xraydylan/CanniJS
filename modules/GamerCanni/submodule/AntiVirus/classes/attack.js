@@ -63,7 +63,7 @@ module.exports = class Attack{
 
         charge_on = attacker.charge_on;
         if (!charge_on) {
-            Attack.strike(attacker, defender);
+            res = Attack.strike(attacker, defender);
         } else {
             dam = Attack.release_attack_damage(attacker,defender);
 
@@ -103,7 +103,7 @@ module.exports = class Attack{
 
         if (charge_on) {
             dam = Math.floor(Attack.release_attack_damage(defender, defender) / 2);
-            res2 = defender.receive_damage(dam);
+            res2 = defender.receive_damage(dam, false);
             defender.charge_on = false;
             defender.charge_count = 0;
         }

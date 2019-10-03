@@ -3,7 +3,7 @@
     { "name": "Canni's Item Stand",
       "id": 1,
       "lv": 0,
-      "items": [101,102,201,301,401],
+      "items": [101,102,201,301,401,501],
       "weapons": [101,201,301],
       "info_on_enter": "%s, you entered Canni's Item Stand.\n",
       "categories": [
@@ -20,7 +20,7 @@
     { "name": "Small Canni Shop",
       "id": 2,
       "lv": 2,
-      "items": [103,202,302,402],
+      "items": [103,202,302,402,502,601],
       "weapons": [102,202,302],
       "info_on_enter": "%s, you entered the Small Canni Shop.\n",
       "categories": [
@@ -37,7 +37,7 @@
     { "name": "Canni Shop",
       "id": 3,
       "lv": 3,
-      "items": [104,203,303,403],
+      "items": [104,203,303,403,503,602,604],
       "weapons": [103,203,303],
       "info_on_enter": "%s, you entered the Canni Shop.\n",
       "categories": [
@@ -71,7 +71,7 @@
     { "name": "Sani's Sanitary Supplies",
       "id": 2,
       "lv": 4,
-      "items": [106,107,108,405],
+      "items": [106,107,108,405,504,505],
       "weapons": [],
       "info_on_enter": "%s, you entered Sani's Sanitary Supplies.\n",
       "categories": [
@@ -84,7 +84,7 @@
     { "name": "Wachmann Weapons (*tm*)",
       "id": 5,
       "lv": 4,
-      "items": [205,206,207],
+      "items": [205,206,207,603,605],
       "weapons": [104,204,304],
       "info_on_enter": "%s, you entered Wachmann Weapons.\n",
       "categories": [

@@ -57,7 +57,9 @@ module.exports = class Item {
         } else if (this.subtype === "exp") {
             text = Tools.parseReply(pre, [this.name, this.experience + this.range])
         } else if (this.subtype === "shield") {
-            text = Tools.parseReply(pre, [this.name, this.rounds_active, this.def_bonus_mul, this.def_bonus_add])
+            text = Tools.parseReply(pre, [this.name, this.rounds_active, this.def_bonus.mul * 100, this.def_bonus.add])
+        } else if (this.subtype === "offensive-shield") {
+            text = Tools.parseReply(pre, [this.name, this.uses_total, this.def_bonus.mul * 100, this.def_bonus.add, this.damage])
         } else {
             text = "No Info Available";
         }
@@ -131,26 +133,49 @@ module.exports = class Item {
         }
 
         if (target.state === "alive") {
-            if (this.subtype === "heal") {
-                message += this.heal(target);
-            }
-            if (this.subtype === "damage") {
-                message += this.apply_damage(battle, user, target);
-            }
-            if (this.subtype === "drain") {
-                message += this.apply_drain(battle, user, target);
-            }
-            if (this.subtype === "revive") {
-                message += this.apply_revive(battle, user, target);
-            }
-            if (this.subtype === "shield") {
-                message += this.apply_shield(battle, user, target);
+            switch (this.subtype) {
+                case "heal": {
+                    message += this.heal(target);
+                    break;
+                }
+                case "damage": {
+                    message += this.apply_damage(battle, user, target);
+                    break;
+                }
+                case "drain": {
+                    message += this.apply_drain(battle, user, target);
+                    break;
+                }
+                case "revive": {
+                    message += this.apply_revive(battle, user, target);
+                    break;
+                }
+                case "shield": {
+                    message += this.apply_shield(battle, user, target);
+                    break;
+                }
+                case "offensive-shield": {
+                    message += this.apply_shield(battle, user, target);
+                    break;
+                }
             }
         } else {
-            if (this.subtype === "revive") {
-                message += this.apply_revive(battle, user, target);
-            } else {
-                message += Tools.parseReply(AV.config.item_fail_traget_defeated, [user.name, target.name]);
+            switch (this.subtype) {
+                case "revive": {
+                    message += this.apply_revive(battle, user, target);
+                    break;
+                }
+                case "shield": {
+                    message += this.apply_shield(battle, user, target);
+                    break;
+                }
+                case "offensive-shield": {
+                    message += this.apply_shield(battle, user, target);
+                    break;
+                }
+                default : {
+                    message += Tools.parseReply(AV.config.item_fail_traget_defeated, [user.name, target.name]);
+                }
             }
         }
 
@@ -186,7 +211,7 @@ module.exports = class Item {
 
         this.check_for_bonus(target.subtype);
 
-        this.dealt_damage = target.receive_damage(this.damage)[0];
+        this.dealt_damage = target.receive_damage(this.damage, false)[0];
 
         if (target.type === "enemy") {
             message += Tools.parseReply(AV.config.item_damage_enemy, [target.name, this.dealt_damage, target.curHP])
