@@ -1,5 +1,6 @@
 {
   "test": "test",
+  "dev_player_data": "Here is the player data file.",
   "DM_create_player_request": "You are not an AVS (AntiVirusSystem) member yet.\nPlease create an AVS account using the following command:\n`create new AVS`",
 
   "DM_signup_1": "--Signup Message--\nEnter your name.",

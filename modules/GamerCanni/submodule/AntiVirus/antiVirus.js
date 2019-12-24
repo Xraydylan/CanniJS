@@ -14,7 +14,10 @@ const Battle_PvE_Multi = require('./classes/battle_pve_multi');
 const Shop = require('./classes/shop');
 const Spawn = require('./classes/spawn');
 const Help = require('./classes/help');
+const fetch = require('node-fetch');
 const AV = require('./antiVirus');
+
+
 
 
 AV.av_path;
@@ -257,12 +260,18 @@ module.exports = class AntiVirus {
         AV.help = new Help(txt_path);
     }
 
-    static save_players() {
+    static save_players(dev_load = false, in_data) {
         let path = AV.av_path + "/data/data.json";
         let save;
-        let proc = this.process_player_data(AV.player_data);
+        let data;
+        if (dev_load) {
+            data = in_data
+        } else {
+            data = AV.player_data
+        }
+        let proc = this.process_player_data(data);
         save = {"player_data": proc};
-        fs.writeFile(path, JSON.stringify(save), function (err) {if (err) throw err;});
+        fs.writeFileSync(path, JSON.stringify(save), function (err) {if (err) throw err;});
     }
 
     static process_player_data(data) {
@@ -1037,5 +1046,47 @@ module.exports = class AntiVirus {
         if (this.input_includes(input, "save")) {
             this.save_players();
         }
+    }
+
+    static dev_get_data(msg) {
+        let path = AV.av_path + "/data/data.json";
+        msg.channel.send(Tools.parseReply(AV.config.dev_player_data, []), {files:[path]});
+        Application.modules.Discord.setMessageSent();
+    }
+
+    static dev_load_data(msg) {
+        let pre, file, data, p_data;
+        if (msg.attachments.array().length === 1) {
+            file = msg.attachments.first();
+            pre = file.filename.split(".");
+            if (pre.length === 2) {
+                if (pre[1] === "json") {
+                    //Promise
+                    data = this.get_data(file.url);
+                    data.then(res => res.json()).then(res => {
+                        try {
+                            p_data = res.player_data;
+                            if (p_data) {
+                                AntiVirus.update_player_data(p_data)
+                            }
+                        } catch (e) {
+                            console.log("Load fail!");
+                        }
+                    });
+                }
+            }
+        }
+
+        Application.modules.Discord.setMessageSent();
+    }
+
+    static get_data(url) {
+        return fetch(url);
+    }
+
+    static update_player_data(data) {
+        AntiVirus.save_players(true, data);
+        AntiVirus.loadPlayerData();
+        console.log("Load success!");
     }
 };

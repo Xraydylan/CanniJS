@@ -39,6 +39,15 @@ module.exports = class RockPaperScissors extends Module {
                     } else if (Tools.msg_starts_mentioned(msg, "activate antivirus")) {
                         return this.start_antivirus(msg);
                     }
+                    if (Tools.msg_starts_mentioned(msg, 'dev av data')) {
+                        if (Application.modules.DevCommands.auth_dev_master(msg.author.id)) {
+                            return AntiVirus.dev_get_data(msg);
+                        }
+                    } else if (Tools.msg_starts_mentioned(msg, 'dev load av')) {
+                        if (Application.modules.DevCommands.auth_dev_master(msg.author.id)) {
+                            return AntiVirus.dev_load_data(msg);
+                        }
+                    }
                 }
 
                 if (this.antivirus_check(msg)) {

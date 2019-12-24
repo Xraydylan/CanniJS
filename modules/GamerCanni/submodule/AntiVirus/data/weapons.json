@@ -144,6 +144,7 @@
       "value": 40,
       "info": "%s causes %s direct damage and up to %s hit damage.\nSani's personal favourite.\n\n"
     },
+
     {
       "name": "Boop Gun",
       "id": 401,
@@ -183,7 +184,7 @@
     {
       "name": "Mango-Launcher",
       "id": 404,
-      "lv": 6,
+      "lv": 5,
       "atk": 3,
       "atk_P": 12,
       "def": 0,
