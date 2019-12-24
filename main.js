@@ -24,12 +24,14 @@ Application.configure({
 Application.registerModule("Discord");
 //Application.registerModule("Python");
 Application.registerModule("Remote");
+Application.registerModule("Overload");
 Application.registerModule("Ignore");
 Application.registerModule("Potato");
 Application.registerModule("UserJoined");
 Application.registerModule("Help");
 Application.registerModule("CanniTimeToHype");
 Application.registerModule("Boop");
+Application.registerModule("Bap");
 Application.registerModule("Hug");
 Application.registerModule("Fanta");
 Application.registerModule("Bizaam");
@@ -42,6 +44,10 @@ Application.registerModule("Solver");
 Application.registerModule("GamerCanni");
 Application.registerModule("Utilities");
 Application.registerModule("Compliment");
+Application.registerModule("Hype");
+Application.registerModule("RoutineMessages");
+Application.registerModule("InterBotCom");
+Application.registerModule("SaniSoda");
 Application.registerModule("NoMessageProcessor");
 
 
