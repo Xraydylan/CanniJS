@@ -21,7 +21,12 @@ module.exports = class CanniTimeToHype extends Module {
                     return;
                 }
 
+                //Deactivated for 2020
+                //Reactivate for Galacon 2021
+
                 return this.tellMeWhen(msg);
+                // msg.channel.send("Currently not available...");
+                // Application.modules.Discord.setMessageSent();
             });
 
             Application.modules.Discord.client.on('message', (msg) => {
@@ -35,7 +40,12 @@ module.exports = class CanniTimeToHype extends Module {
 
                 if (msg.isMemberMentioned(Application.modules.Discord.client.user)) {
                     if (Tools.msg_contains(msg,'when is galacon')) {
-                        return this.tellMeWhen();
+                        //Deactivated for 2020
+                        //Reactivate for Galacon 2021
+
+                        return this.tellMeWhen(msg);
+                        // msg.channel.send("Currently not available...");
+                        // Application.modules.Discord.setMessageSent();
                     }
                 }
             });
@@ -45,6 +55,9 @@ module.exports = class CanniTimeToHype extends Module {
             } else {
                 this.hypeDate = moment(this.config.hypeDate);
             }
+
+            //Deactivated for 2020
+            //Reactivate for Galacon 2021
 
             this.log.info("Set hype date to " + this.hypeDate.format());
             this.hypeInterval = setInterval(() => this.updateHype(), (this.config.updateInterval || 10) * 1000);
